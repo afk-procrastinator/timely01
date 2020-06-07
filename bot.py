@@ -32,7 +32,6 @@ def progressBar(value, endvalue, bar_length=20):
     timeDelta = dt.timedelta(endvalue - value)
     return ("\rPercent: [{0}] {1}%".format(arrow + spaces, int(round(percent * 100))))
 
-
 # timer command. arg1 is the duration (up to 24 hours), arg2 is the units (seconds, minutes, hours)
 # anything longer- several days, for instance, will be the ?reminder command
 @bot.command()
@@ -130,10 +129,25 @@ def timeZone(input):
 # tz command: takes one arg, gives time at location
 @bot.command()
 async def tz(ctx, input: str):
-    shifted, region = timeZone(input)
+    global lat, lon
+    utc = ar.utcnow()
+    testing = gmaps.geocode(input)
+    lat = extract_values(testing, "lat")[0]
+    lon = extract_values(testing, "lng")[0]
+    region = tf.timezone_at(lng=lon, lat=lat)
+    shifted = utc.to(region)
     formatted = shifted.format("HH:mm:ss")
     region = region.split("/")[1].replace("_", " ")
-    await ctx.send(f"Time in `{region}` is currently `{formatted}`.")
+    embed = discord.Embed(title="**Timezone**", colour=discord.Colour(0xffffff))
+    embed.add_field(name="Local time in:", value=region)
+    await ctx.send(embed=embed)
+#    await ctx.send(f"Time in `{region}` is currently `{formatted}`.")
+    return
+
+# tz error command handling
+@tz.error
+async def tz_error(ctx, error):
+    print(error)
 
 # only allows Admin to call the setup()
 @bot.command()
