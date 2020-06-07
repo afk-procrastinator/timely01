@@ -16,6 +16,7 @@ import asyncio
 commandKey = '?'
 gmaps = googlemaps.Client(key=settings.GMAPS)
 token = settings.TOKEN
+botColor = 0x176BD3
 bot = commands.Bot(command_prefix=commandKey)
 tf = TimezoneFinder()
 lat = 0
@@ -37,11 +38,12 @@ def progressBar(value, endvalue, bar_length=20):
 @bot.command()
 async def timer(ctx, arg1: int, arg2: str):
     units = ""
+    possibleCommands = ["seconds", "sec", "secs", "s", "minutes", "hours", "minute", "hour", "m", "mins", "hr", "hrs"]
     global cancelTimer
-    if arg2 in ["seconds", "minutes", "hours", "minute", "hour", "m", "mins", "hr", "hrs"]:
+    if arg2 in possibleCommands:
         units = arg2
     else:
-        embed = discord.Embed(title="Timer error:", colour=discord.Colour(0xffffff))
+        embed = discord.Embed(title="Timer error:", colour=discord.Colour(botColor))
         embed.add_field(name="Syntax error", value="Whoops! Syntax error. Command should be: \n ```?timer length unit``` \n Units can only be `hours`, `minutes`, or `seconds`. Please use the `?reminder` command for anything longer.")
         await ctx.send(embed = embed)
         return
@@ -53,7 +55,7 @@ async def timer(ctx, arg1: int, arg2: str):
         print("hrs")
     totalTime = time.strftime("%H:%M:%S", time.gmtime(arg1))
     if arg1 > 43200:
-        embed = discord.Embed(title="Timer too long!", colour=discord.Colour(0xffffff))
+        embed = discord.Embed(title="Timer too long!", colour=discord.Colour(botColor))
         embed.add_field(name="Progress Bar", value="Your timer is over 12 hours! Why don't you try the `?reminder` command instead?")
         await ctx.send(embed=embed)
         return
@@ -61,7 +63,7 @@ async def timer(ctx, arg1: int, arg2: str):
     while t < arg1 + 1:
         if cancelTimer == True:
             string = ("_**CANCELLED_**")
-            embed = discord.Embed(title="Timer:", colour=discord.Colour(0xffffff))
+            embed = discord.Embed(title="Timer:", colour=discord.Colour(botColor))
             embed.add_field(name="Progress Bar", value=string)
             return
         bar_length = 20
@@ -70,7 +72,7 @@ async def timer(ctx, arg1: int, arg2: str):
         spaces = ' ' * (bar_length - len(arrow))
         timeRemaining = time.strftime("%H:%M:%S", time.gmtime(int(arg1-t)))
         string = ("```\rPercent: [{0}] {1}%```".format(arrow + spaces, int(round(percent * 100))))
-        embed = discord.Embed(title="Timer: {0}".format(timeRemaining), colour=discord.Colour(0xffffff))
+        embed = discord.Embed(title="Timer: {0}".format(timeRemaining), colour=discord.Colour(botColor))
         embed.add_field(name="Progress Bar", value=string)
         if t == 0:
             message = await ctx.send(embed=embed)
@@ -79,7 +81,7 @@ async def timer(ctx, arg1: int, arg2: str):
         t += 1
         await asyncio.sleep(1)
     string = ("_**FINISHED**_")
-    embed = discord.Embed(title="Timer:", colour=discord.Colour(0xffffff))
+    embed = discord.Embed(title="Timer:", colour=discord.Colour(botColor))
     embed.add_field(name="Progress Bar", value=string)
     await message.edit(embed=embed)
 
@@ -93,7 +95,6 @@ async def cancelTimer(ctx):
 @timer.error
 async def timer_error(ctx, error):
     print(error)
-
 
 # Extracts all key values from a dictionary obj
 def extract_values(obj, key):
@@ -129,20 +130,14 @@ def timeZone(input):
 # tz command: takes one arg, gives time at location
 @bot.command()
 async def tz(ctx, input: str):
-    global lat, lon
     utc = ar.utcnow()
-    testing = gmaps.geocode(input)
-    lat = extract_values(testing, "lat")[0]
-    lon = extract_values(testing, "lng")[0]
-    region = tf.timezone_at(lng=lon, lat=lat)
+    shifted, region = timeZone(input)
     shifted = utc.to(region)
     formatted = shifted.format("HH:mm:ss")
     region = region.split("/")[1].replace("_", " ")
-    embed = discord.Embed(title="**Timezone**", colour=discord.Colour(0xffffff))
+    embed = discord.Embed(title="**Timezone**", colour=discord.Colour(botColor))
     embed.add_field(name="Local time in:", value=region)
     await ctx.send(embed=embed)
-#    await ctx.send(f"Time in `{region}` is currently `{formatted}`.")
-    return
 
 # tz error command handling
 @tz.error
@@ -172,10 +167,50 @@ async def setup(ctx, input: str, *args: str):
 @setup.error
 async def setup_error(ctx, error):
    if isinstance(error, commands.MissingRequiredArgument):
-    embed = discord.Embed(title="**Argument error**", colour=discord.Colour(0xffffff))
+    embed = discord.Embed(title="**Argument error**", colour=discord.Colour(botColor))
     embed.add_field(name="Possible arguments:", value="`role` - creates role for bot, only needed for initialization.")
     await ctx.send(embed=embed)
 
+
+def difference(initial: str, method: str):
+    now = ar.utcnow()
+    difference = initial - now
+    inFormat = method.lower()
+    difference = difference.days
+    if inFormat in ["years", "year", "yr", "yrs"]:
+        differenceQ = (divmod(difference, 365))
+        differenceQ2 = (divmod(differenceQ[1], 30))
+        differenceQ3 = (divmod(differenceQ2[1], 7))
+        string = "In years: ", differenceQ[0], "\nMonths:", differenceQ2[0], "\nWeeks:", differenceQ3[0], "\nDays:", differenceQ3[1]
+        return string
+    elif inFormat in ["months", "month", "mo", "mos"]:
+        differenceQ = (divmod(difference, 30))
+        differenceQ2 = (divmod(differenceQ[1], 7))
+        string = "In months: ", differenceQ[0], "\nWeeks:", differenceQ[1], "\nDays:", differenceQ2[1]
+        return string
+    elif inFormat in ["weeks", "week", "wk", "wks"]:
+        differenceQ = (divmod(difference, 7))
+        string = "In weeks: ", differenceQ[0], "\nDays:", differenceQ[1]
+        return string
+    elif inFormat in ["days", "day", "dy", "dys"]:
+        differenceQ = (divmod(difference, 1))
+        string = "difference in days: ", differenceQ[1]
+        return string
+    else: 
+        print("error")
+
+
+# command syntax: ?dis DATE METHOD
+
+@bot.command()
+async def dis(ctx, arg1:str, arg2:str):
+    now = ar.utcnow()
+    try:
+        startDateParsed = ar.get(arg1, 'DD/MM/YYYY')
+    except ar.ParserError:
+        print("error")
+    await ctx.send(difference(startDateParsed, arg2))
+    
 
 # On bot login, send info
 @bot.event
@@ -206,7 +241,7 @@ async def delrole(ctx, *,role_name):
 # embed reference
 @bot.command()
 async def embed(ctx):
-    embed = discord.Embed(title="title ~~(did you know you can have markdown here too?)~~", colour=discord.Colour(0xffffff), url="https://discordapp.com", description="this supports [named links](https://discordapp.com) on top of the previously shown subset of markdown. ```\nyes, even code blocks```")
+    embed = discord.Embed(title="title ~~(did you know you can have markdown here too?)~~", colour=discord.Colour(botColor), url="https://discordapp.com", description="this supports [named links](https://discordapp.com) on top of the previously shown subset of markdown. ```\nyes, even code blocks```")
 
     embed.set_image(url="https://cdn.discordapp.com/embed/avatars/0.png")
     embed.set_thumbnail(url="https://lh3.googleusercontent.com/proxy/FSxR-w6DAx_-36JlbDd4fKK4FVwGDtA9cGCTASBDs1iKWFKXtkFL4MsMRyuRaVo3BUIbqCdUIYKHEEe7C8uMmYRZ8kH4TQAK40j-HJochCZWHw")
@@ -227,14 +262,14 @@ bot.run(token)
 # NEXT STEPS: 
 '''
 1. Make shit pretty.
-    a. Text formatting
+    a. Text formatting [check]
     b. Cleaning up the "America/New_York" to be simply New York [check]
 2. Accept commands via DM ONLY
-    a. Create roles based off of commands
-    b. IP/system TZ tracking?
+    a. Create roles based off of commands 
+    b. IP/system TZ tracking? 
 3. Other features
-    a. Time until, timer, countdown, reminders
-    b. Help thing
+    a. Time until, timer, countdown, reminders 
+    b. Help thing 
     c. How to publish? Figure out higher-level organizational shit. 
 4. Github
     a. Create README, etc. Maybe find someone to give feedback on the code?
