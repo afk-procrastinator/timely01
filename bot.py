@@ -5,21 +5,96 @@ from discord.ext import commands
 from discord.utils import get
 from dateutil import tz 
 import arrow as ar
+import datetime as dt
 from dotenv import load_dotenv
 import os
 import settings
+import time
+import sys
+import asyncio
 
-print(settings.GMAPS)
-print(settings.TOKEN)
-
+commandKey = '?'
 gmaps = googlemaps.Client(key=settings.GMAPS)
 token = settings.TOKEN
-bot = commands.Bot(command_prefix='?')
+bot = commands.Bot(command_prefix=commandKey)
 tf = TimezoneFinder()
 lat = 0
 lon = 0
 region = ""
 timeVibeRole = False
+cancelTimer = False
+
+# returns a progress bar with current value, end value, and length (customizable(?))
+def progressBar(value, endvalue, bar_length=20):
+    percent = float(value) / endvalue
+    arrow = '-' * int(round(percent * bar_length)-1) + '>'
+    spaces = ' ' * (bar_length - len(arrow))
+    timeDelta = dt.timedelta(endvalue - value)
+    return ("\rPercent: [{0}] {1}%".format(arrow + spaces, int(round(percent * 100))))
+
+
+# timer command. arg1 is the duration (up to 24 hours), arg2 is the units (seconds, minutes, hours)
+# anything longer- several days, for instance, will be the ?reminder command
+@bot.command()
+async def timer(ctx, arg1: int, arg2: str):
+    units = ""
+    global cancelTimer
+    if arg2 in ["seconds", "minutes", "hours", "minute", "hour", "m", "mins", "hr", "hrs"]:
+        units = arg2
+    else:
+        embed = discord.Embed(title="Timer error:", colour=discord.Colour(0xffffff))
+        embed.add_field(name="Syntax error", value="Whoops! Syntax error. Command should be: \n ```?timer length unit``` \n Units can only be `hours`, `minutes`, or `seconds`. Please use the `?reminder` command for anything longer.")
+        await ctx.send(embed = embed)
+        return
+    if arg2 in ["minutes", "minute", "m", "mins"]:
+        arg1 = arg1 * 60
+        print("mins")
+    elif arg2 in ["hours", "hour", "hr", "hrs"]:
+        arg1 = arg1 * 3600
+        print("hrs")
+    totalTime = time.strftime("%H:%M:%S", time.gmtime(arg1))
+    if arg1 > 43200:
+        embed = discord.Embed(title="Timer too long!", colour=discord.Colour(0xffffff))
+        embed.add_field(name="Progress Bar", value="Your timer is over 12 hours! Why don't you try the `?reminder` command instead?")
+        await ctx.send(embed=embed)
+        return
+    t = 0
+    while t < arg1 + 1:
+        if cancelTimer == True:
+            string = ("_**CANCELLED_**")
+            embed = discord.Embed(title="Timer:", colour=discord.Colour(0xffffff))
+            embed.add_field(name="Progress Bar", value=string)
+            return
+        bar_length = 20
+        percent = float(t) / arg1
+        arrow = '-' * int(round(percent * bar_length)-1) + '>'
+        spaces = ' ' * (bar_length - len(arrow))
+        timeRemaining = time.strftime("%H:%M:%S", time.gmtime(int(arg1-t)))
+        string = ("```\rPercent: [{0}] {1}%```".format(arrow + spaces, int(round(percent * 100))))
+        embed = discord.Embed(title="Timer: {0}".format(timeRemaining), colour=discord.Colour(0xffffff))
+        embed.add_field(name="Progress Bar", value=string)
+        if t == 0:
+            message = await ctx.send(embed=embed)
+        else:
+            await message.edit(embed=embed)
+        t += 1
+        await asyncio.sleep(1)
+    string = ("_**FINISHED**_")
+    embed = discord.Embed(title="Timer:", colour=discord.Colour(0xffffff))
+    embed.add_field(name="Progress Bar", value=string)
+    await message.edit(embed=embed)
+
+@bot.command()
+async def cancelTimer(ctx):
+    global cancelTimer
+    cancelTimer == True
+    print("true")
+
+# error with the timer command 
+@timer.error
+async def timer_error(ctx, error):
+    print(error)
+
 
 # Extracts all key values from a dictionary obj
 def extract_values(obj, key):
@@ -45,20 +120,17 @@ def extract_values(obj, key):
 def timeZone(input):
     global lat, lon
     utc = ar.utcnow()
-
     testing = gmaps.geocode(input)
-    
     lat = extract_values(testing, "lat")[0]
     lon = extract_values(testing, "lng")[0]
-
     region = tf.timezone_at(lng=lon, lat=lat)
     shifted = utc.to(region)
-    return shifted
+    return shifted, region
 
 # tz command: takes one arg, gives time at location
 @bot.command()
 async def tz(ctx, input: str):
-    shifted = timeZone(input)
+    shifted, region = timeZone(input)
     formatted = shifted.format("HH:mm:ss")
     region = region.split("/")[1].replace("_", " ")
     await ctx.send(f"Time in `{region}` is currently `{formatted}`.")
@@ -66,23 +138,30 @@ async def tz(ctx, input: str):
 # only allows Admin to call the setup()
 @bot.command()
 # @commands.has_role("Power")
-async def setup(ctx):
-    guild = ctx.guild
-    print("setup run")
-    await guild.create_role(name="TimeVibeRole")
-    selfRole = guild.roles
-    print(selfRole)
-    for role in selfRole:
-        print(role)
-        if role == "TimeVibeRole":
-            print(role.id)
-            timeVibeRole = True
-            await ctx.send("Bot role already exists!")
+async def setup(ctx, input: str, *args: str):
+    if input == "role":
+        print("role")
+        guild = ctx.guild
+        selfRole = guild.roles
+        for role in selfRole:
+            if role == "TimeVibeRole":
+                print(role.id)
+                timeVibeRole = True
+                await ctx.send("Bot role already exists!")
+    if timeVibeRole == False:
+        print("create")
+        role = guild.create_role(name="TimeVibeRole")
+        await role
+        await bot.add_roles(bot, role)
             
 # setup command error handling
 @setup.error
 async def setup_error(ctx, error):
-    await ctx.send("Please give the bot permission to edit roles first!")
+   if isinstance(error, commands.MissingRequiredArgument):
+    embed = discord.Embed(title="**Argument error**", colour=discord.Colour(0xffffff))
+    embed.add_field(name="Possible arguments:", value="`role` - creates role for bot, only needed for initialization.")
+    await ctx.send(embed=embed)
+
 
 # On bot login, send info
 @bot.event
@@ -126,7 +205,7 @@ async def embed(ctx):
     embed.add_field(name="<:thonkang:219069250692841473>", value="these last two", inline=True)
     embed.add_field(name="<:thonkang:219069250692841473>", value="are inline fields", inline=True)
 
-    await ctx.send(content="this `supports` __a__ **subset** *of* ~~markdown~~ 😃 ```js\nfunction foo(bar) {\n  console.log(bar);\n}\n\nfoo(1);```", embed=embed)
+    await ctx.send(embed=embed)
 
 # Run, bot, run!
 bot.run(token)
