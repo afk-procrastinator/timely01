@@ -179,26 +179,63 @@ def difference(initial: str, method: str):
     difference = difference.days
     if inFormat in ["years", "year", "yr", "yrs"]:
         differenceQ = (divmod(difference, 365))
+        if differenceQ[0] == 1:
+            year = "year"
+        else:
+            year = "years"
         differenceQ2 = (divmod(differenceQ[1], 30))
+        if differenceQ2[0] == 1:
+            month = "month"
+        else: 
+            month = "months"
         differenceQ3 = (divmod(differenceQ2[1], 7))
-        string = "In years: ", differenceQ[0], "\nMonths:", differenceQ2[0], "\nWeeks:", differenceQ3[0], "\nDays:", differenceQ3[1]
+        if differenceQ3[0] == 1:
+            week = "week"
+        else: 
+            week = "weeks"
+        if differenceQ3[1] == 1:
+            day = "day"
+        else:
+            day = "days"
+        string = "Time until: {0}: \n{1} {2}, {3} {4}, {5} {6}, and {7} {8}".format(initial.format("MMMM DD, YYYY"), str(differenceQ[0]), year, str(differenceQ2[0]), month,str(differenceQ3[0]) , week, str(differenceQ3[1], day))
         return string
     elif inFormat in ["months", "month", "mo", "mos"]:
         differenceQ = (divmod(difference, 30))
         differenceQ2 = (divmod(differenceQ[1], 7))
-        string = "In months: ", differenceQ[0], "\nWeeks:", differenceQ[1], "\nDays:", differenceQ2[1]
+        if differenceQ[0] == 1:
+            month = "month"
+        else: 
+            month = "months"
+        differenceQ3 = (divmod(differenceQ2[1], 7))
+        if differenceQ2[0] == 1:
+            week = "week"
+        else: 
+            week = "weeks"
+        if differenceQ2[1] == 1:
+            day = "day"
+        else:
+            day = "days"
+        string = "Time until: {0}: \n{1} {2}, {3} {4}, {5} {6}".format(initial.format("MMMM DD, YYYY"), str(differenceQ[0]), month, str(differenceQ2[0]), week, str(differenceQ2[1]), day)
         return string
     elif inFormat in ["weeks", "week", "wk", "wks"]:
         differenceQ = (divmod(difference, 7))
-        string = "In weeks: ", differenceQ[0], "\nDays:", differenceQ[1]
+        if differenceQ[0] == 1:
+            week = "week"
+        else: 
+            week = "weeks"
+        if differenceQ[1] == 1:
+            day = "day"
+        else:
+            day = "days"
+        string = "Time until" + initial.format("MMMM DD, YYYY: \n") + str(differenceQ[0]) + " weeks and " + str(differenceQ[1]) + " days."
+        string = "Time until: {0}: \n{1} {2}, {3} {4}".format(initial.format("MMMM DD, YYYY"), str(differenceQ[0]), week, str(differenceQ[1]), day)
         return string
     elif inFormat in ["days", "day", "dy", "dys"]:
         differenceQ = (divmod(difference, 1))
-        string = "difference in days: ", differenceQ[1]
+        string = "Time until: "+ initial.format("MMMM DD, YYYY: \n") + str(differenceQ[0]) + " days."
         return string
     else: 
         print("error")
-
 
 # command syntax: ?dis DATE METHOD
 
