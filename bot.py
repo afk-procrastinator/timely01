@@ -32,7 +32,6 @@ def progressBar(value, endvalue, bar_length=20):
     spaces = ' ' * (bar_length - len(arrow))
     timeDelta = dt.timedelta(endvalue - value)
     return ("\rPercent: [{0}] {1}%".format(arrow + spaces, int(round(percent * 100))))
-
 # timer command. arg1 is the duration (up to 24 hours), arg2 is the units (seconds, minutes, hours)
 # anything longer- several days, for instance, will be the ?reminder command
 @bot.command()
@@ -61,41 +60,39 @@ async def timer(ctx, arg1: int, arg2: str):
         return
     t = 0
     while t < arg1 + 1:
-        if cancelTimer == True:
-            string = ("_**CANCELLED_**")
-            embed = discord.Embed(title="Timer:", colour=discord.Colour(botColor))
-            embed.add_field(name="Progress Bar", value=string)
-            return
         bar_length = 20
         percent = float(t) / arg1
         arrow = '-' * int(round(percent * bar_length)-1) + '>'
         spaces = ' ' * (bar_length - len(arrow))
         timeRemaining = time.strftime("%H:%M:%S", time.gmtime(int(arg1-t)))
         string = ("```\rPercent: [{0}] {1}%```".format(arrow + spaces, int(round(percent * 100))))
-        embed = discord.Embed(title="Timer: {0}".format(timeRemaining), colour=discord.Colour(botColor))
-        embed.add_field(name="Progress Bar", value=string)
+        embed = discord.Embed(title="⏱: {0}".format(timeRemaining), colour=discord.Colour(botColor))
+        embed.add_field(name="⏳", value=string)
         if t == 0:
             message = await ctx.send(embed=embed)
         else:
             await message.edit(embed=embed)
         t += 1
         await asyncio.sleep(1)
+        if cancelTimer == True:
+            print("cancelled")
+            string = ("_**CANCELLED_**")
+            embed = discord.Embed(title="⏱", colour=discord.Colour(botColor))
+            embed.add_field(name="⏱", value=string)
+            return
     string = ("_**FINISHED**_")
-    embed = discord.Embed(title="Timer:", colour=discord.Colour(botColor))
-    embed.add_field(name="Progress Bar", value=string)
+    embed = discord.Embed(title="💫🎉🎉🎉💫", colour=discord.Colour(botColor))
+    embed.add_field(name="💫🎉🎉🎉💫", value=string)
     await message.edit(embed=embed)
-
 @bot.command()
-async def cancelTimer(ctx):
+async def cancel(ctx):
     global cancelTimer
     cancelTimer == True
     print("true")
-
 # error with the timer command 
 @timer.error
 async def timer_error(ctx, error):
     print(error)
-
 # Extracts all key values from a dictionary obj
 def extract_values(obj, key):
     """Pull all values of specified key from nested JSON."""
@@ -116,7 +113,6 @@ def extract_values(obj, key):
 
     results = extract(obj, arr, key)
     return results
-
 def timeZone(input):
     global lat, lon
     utc = ar.utcnow()
@@ -126,7 +122,6 @@ def timeZone(input):
     region = tf.timezone_at(lng=lon, lat=lat)
     shifted = utc.to(region)
     return shifted, region
-
 # tz command: takes one arg, gives time at location
 @bot.command()
 async def tz(ctx, input: str):
@@ -138,12 +133,10 @@ async def tz(ctx, input: str):
     embed = discord.Embed(title="**Timezone**", colour=discord.Colour(botColor))
     embed.add_field(name="Local time in:", value=region)
     await ctx.send(embed=embed)
-
 # tz error command handling
 @tz.error
 async def tz_error(ctx, error):
     print(error)
-
 # only allows Admin to call the setup()
 @bot.command()
 # @commands.has_role("Power")
@@ -161,8 +154,7 @@ async def setup(ctx, input: str, *args: str):
         print("create")
         role = guild.create_role(name="TimeVibeRole")
         await role
-        await bot.add_roles(bot, role)
-            
+        await bot.add_roles(bot, role)       
 # setup command error handling
 @setup.error
 async def setup_error(ctx, error):
@@ -170,8 +162,7 @@ async def setup_error(ctx, error):
     embed = discord.Embed(title="**Argument error**", colour=discord.Colour(botColor))
     embed.add_field(name="Possible arguments:", value="`role` - creates role for bot, only needed for initialization.")
     await ctx.send(embed=embed)
-
-
+# difference algorithm
 def difference(initial: str, method: str):
     now = ar.utcnow()
     difference = initial - now
@@ -198,7 +189,7 @@ def difference(initial: str, method: str):
         else:
             day = "days"
         string = "Time until: {0}: \n{1} {2}, {3} {4}, {5} {6}, and {7} {8}".format(initial.format("MMMM DD, YYYY"), str(differenceQ[0]), year, str(differenceQ2[0]), month,str(differenceQ3[0]) , week, str(differenceQ3[1], day))
-        return string
+        return string, initial.format("MMMM DD, YYYY:")
     elif inFormat in ["months", "month", "mo", "mos"]:
         differenceQ = (divmod(difference, 30))
         differenceQ2 = (divmod(differenceQ[1], 7))
@@ -216,7 +207,7 @@ def difference(initial: str, method: str):
         else:
             day = "days"
         string = "Time until: {0}: \n{1} {2}, {3} {4}, {5} {6}".format(initial.format("MMMM DD, YYYY"), str(differenceQ[0]), month, str(differenceQ2[0]), week, str(differenceQ2[1]), day)
-        return string
+        return string, initial.format("MMMM DD, YYYY:")
     elif inFormat in ["weeks", "week", "wk", "wks"]:
         differenceQ = (divmod(difference, 7))
         if differenceQ[0] == 1:
@@ -229,16 +220,14 @@ def difference(initial: str, method: str):
             day = "days"
         string = "Time until" + initial.format("MMMM DD, YYYY: \n") + str(differenceQ[0]) + " weeks and " + str(differenceQ[1]) + " days."
         string = "Time until: {0}: \n{1} {2}, {3} {4}".format(initial.format("MMMM DD, YYYY"), str(differenceQ[0]), week, str(differenceQ[1]), day)
-        return string
+        return string, initial.format("MMMM DD, YYYY:")
     elif inFormat in ["days", "day", "dy", "dys"]:
         differenceQ = (divmod(difference, 1))
         string = "Time until: "+ initial.format("MMMM DD, YYYY: \n") + str(differenceQ[0]) + " days."
-        return string
+        return string, initial.format("MMMM DD, YYYY:")
     else: 
         print("error")
-
-# command syntax: ?dis DATE METHOD
-
+# difference command
 @bot.command()
 async def dis(ctx, arg1:str, arg2:str):
     now = ar.utcnow()
@@ -246,8 +235,13 @@ async def dis(ctx, arg1:str, arg2:str):
         startDateParsed = ar.get(arg1, 'DD/MM/YYYY')
     except ar.ParserError:
         print("error")
-    await ctx.send(difference(startDateParsed, arg2))
+    string, date = difference(startDateParsed, arg2)
+    embed = discord.Embed(title="Days until: {0}".format(date), colour=discord.Colour(botColor))
+    embed.add_field(name="⏰", value=string)
+    await ctx.send(embed = embed)
+
     
+
 
 # On bot login, send info
 @bot.event
