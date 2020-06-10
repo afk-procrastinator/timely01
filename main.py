@@ -1,4 +1,3 @@
-import *
 import googlemaps
 from timezonefinder import TimezoneFinder
 import discord
@@ -16,6 +15,8 @@ import asyncio
 import json
 import threading
 from threading import Thread
+
+from second import runAppend
 
 commandKey = '?'
 gmaps = googlemaps.Client(key=settings.GMAPS)
@@ -39,24 +40,22 @@ min = ["minutes", "minute", "min", "mins"]
 
 def formatToMin(inFormat, difference):
     if inFormat in min:
-        return difference * 60
+        return difference
     elif inFormat in hour:
-        return difference * 3600
+        return difference * 60
     elif inFormat in day:
-        return difference * 86400
+        return difference * 1440
     elif inFormat in week:
-        return difference * 604800
+        return difference * 10080
     elif inFormat in month:
-        return difference * 2628000
-'''
-async def reminder(ctx, length, message, user, timeCreated):
-    time.sleep(length/1000)
-    embed = discord.Embed(title="Your reminder is here!", colour=discord.Colour(botColor))
-    embed.add_field(name = "Created at:", value = "Created on:" + str(timeCreated))
-    embed.add_field(name = "Message from your past self:", value = message)
-    member = bot.get_user(user)
-    await member.send(embed = embed)
-'''
+        return difference * 43800
+
+async def createFile(ctx, append):
+    guildID = (ctx.guild.id)
+    greater24 = guildID + "greater"
+    less24 = guildID + "less"
+
+
 @bot.command()
 async def remind(ctx, user: discord.Member, message: str, *arg):
     command = []
@@ -64,29 +63,26 @@ async def remind(ctx, user: discord.Member, message: str, *arg):
         command.append(args)
     args = 0
     length = len(command)
-    i = 1
+    print(length)
+    i = 0
     arguments = []
     timeAdd = 0
-    #remindString = ""
-    timeCreated = ar.utcnow().format("MMMM Do, YYYY [at] DD:mm")
-    while i < (length-1):
-        print("argument: ", command[i+1], command[i+2])
-        #remindString = remindString + " " + command[i+1] + command[i+2]
-        additional = formatToMin(command[i+2], int(command[i+1]))
+    timeNow = ar.utcnow()
+    timeCreated = timeNow.format("MMMM Do, YYYY [at] DD:mm")
+    while i < (length - 1):
+        print("argument: ", command[i], command[i+1])
+        additional = formatToMin(command[i+1], int(command[i]))
         print(additional)
         timeAdd += additional
         print(timeAdd)
         i += 2
+    dictToSend = dict({"timeAdd": timeAdd, "user": user.id, "timeCreated": timeCreated, "message": message, "guild": ctx.guild.id})
+    runAppend(dictToSend)
     embed = discord.Embed(title="⏲ Your reminder is set! ⏲", colour=discord.Colour(botColor))
     embed.add_field(name = "You will be reminded in:", value = timeAdd)
     embed.add_field(name = "Your message is:", value = message)
     await ctx.send(embed = embed)
     await time.sleep(timeAdd)
-    embed = discord.Embed(title="⏲ Your reminder is here! ⏲", colour=discord.Colour(botColor))
-    embed.add_field(name = "Created at:", value = "Created on: " + str(timeCreated))
-    embed.add_field(name = "Message from your past self:", value = message)
-    channel = await user.create_dm()
-    await channel.send(embed = embed)
 
 @remind.error
 async def remind_error(ctx, error):
@@ -154,6 +150,7 @@ async def timer(ctx, arg1: int, arg2: str):
     embed = discord.Embed(title="💫🎉🎉🎉💫", colour=discord.Colour(botColor))
     embed.add_field(name="💫🎉🎉🎉💫", value=string)
     await message.edit(embed=embed)
+
 @bot.command()
 async def cancel(ctx):
     global cancelTimer
