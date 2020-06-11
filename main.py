@@ -15,16 +15,16 @@ import asyncio
 import json
 import threading
 from threading import Thread
-
 from second import runAppend
+from second import sendDict
 
 commandKey = '?'
 gmaps = googlemaps.Client(key=settings.GMAPS)
 token = settings.TOKEN
-botColor = 0x176BD3
 bot = commands.Bot(command_prefix=commandKey)
 tf = TimezoneFinder()
 lat = 0
+botColor = 0x176BD3
 lon = 0
 region = ""
 timeVibeRole = False
@@ -55,6 +55,9 @@ async def createFile(ctx, append):
     greater24 = guildID + "greater"
     less24 = guildID + "less"
 
+@bot.listen("sendReminder")
+async def sendReminder(ctx, input: dict):
+    await print(sendDict)
 
 @bot.command()
 async def remind(ctx, user: discord.Member, message: str, *arg):
@@ -77,12 +80,11 @@ async def remind(ctx, user: discord.Member, message: str, *arg):
         print(timeAdd)
         i += 2
     dictToSend = dict({"timeAdd": timeAdd, "user": user.id, "timeCreated": timeCreated, "message": message, "guild": ctx.guild.id})
-    runAppend(dictToSend)
+    await runAppend(dictToSend)
     embed = discord.Embed(title="⏲ Your reminder is set! ⏲", colour=discord.Colour(botColor))
     embed.add_field(name = "You will be reminded in:", value = timeAdd)
     embed.add_field(name = "Your message is:", value = message)
     await ctx.send(embed = embed)
-    await time.sleep(timeAdd)
 
 @remind.error
 async def remind_error(ctx, error):
