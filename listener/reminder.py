@@ -55,11 +55,13 @@ async def append(guild: str, input: dict):
         except IOError:
             print("error")
 
+
 async def addToLoop(self, input: dict):
     length = len(loopDict)
     loopDict[str(length)] = input 
     #print(loopDict)
-    
+   
+# Takes dict and figures out where it belongs 
 async def runAppend(self, importDict: dict):
     global sendDict
     timeAdd = importDict["timeAdd"]
@@ -74,6 +76,7 @@ async def runAppend(self, importDict: dict):
         addToLoop(importDict)
         sendDict = importDict
 
+# Formats various lengths to minutes
 def formatToMin(self, inFormat, difference):
         if inFormat in min:
             return difference
@@ -86,6 +89,7 @@ def formatToMin(self, inFormat, difference):
         elif inFormat in month:
             return difference * 43800
 
+# Not in use currently
 async def createFile(self, ctx, append):
     guildID = (ctx.guild.id)
     greater24 = guildID + "greater"

@@ -13,10 +13,7 @@ import time
 import sys
 import asyncio
 import json
-import threading
-from threading import Thread
-from second import runAppend
-from second import sendDict
+
 
 commandKey = '?'
 gmaps = googlemaps.Client(key=settings.GMAPS)

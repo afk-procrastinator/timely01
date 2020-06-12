@@ -33,7 +33,8 @@ startup_extensions = [
     "listener.timeZone",
     "listener.reminder",
     "listener.distance",
-    "listener.timer"
+    "listener.timer",
+    "listener.currency"
 ]
 
 # On bot login, send info
