@@ -4,4 +4,5 @@ Untitled-1
 __pycache__/
 oldThings/
 files/
-
+.DS_Store
+__pycache__
