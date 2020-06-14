@@ -21,6 +21,7 @@ commandKey = 't!'
 gmaps = googlemaps.Client(key=settings.GMAPS)
 token = settings.TOKEN
 bot = commands.Bot(command_prefix=commandKey)
+bot.remove_command("help")
 tf = TimezoneFinder()
 
 month = ["months", "month", "mo", "mos"]
@@ -43,6 +44,7 @@ startup_extensions = [
 # On bot login, send info
 @bot.event
 async def on_ready():
+    bot.remove_command('help')
     for extension in startup_extensions:
         try:
             bot.load_extension(extension)
