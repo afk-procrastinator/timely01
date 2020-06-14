@@ -15,8 +15,9 @@ import asyncio
 import json
 import threading
 from threading import Thread
+from listener.reminder import runLoop
 
-commandKey = '?'
+commandKey = 't!'
 gmaps = googlemaps.Client(key=settings.GMAPS)
 token = settings.TOKEN
 bot = commands.Bot(command_prefix=commandKey)
@@ -34,7 +35,9 @@ startup_extensions = [
     "listener.reminder",
     "listener.distance",
     "listener.timer",
-    "listener.currency"
+    "listener.currency",
+    "listener.botCommands",
+    "listener.jokes"
 ]
 
 # On bot login, send info
@@ -46,7 +49,7 @@ async def on_ready():
         except Exception as e:
             exc = '{}: {}'.format(type(e).__name__, e)
             print('Failed to load extension {}\n{}'.format(extension, exc))
-    print('Logged in as')
+    print('\nLogged in as')
     print(bot.user.name)
     print(bot.user.id)
     print('------')

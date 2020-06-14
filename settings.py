@@ -7,3 +7,4 @@ load_dotenv(dotenv_path)
 
 TOKEN = os.environ.get("DISCORD_TOKEN")
 GMAPS = os.environ.get("GMAPS")
+OMDB = os.environ.get("OMDB")

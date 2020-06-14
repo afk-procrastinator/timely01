@@ -1,7 +1,7 @@
 .env
 timezoneArrow.py
 Untitled-1
-__pycache__/
+__pycache__
 oldThings/
 files/
 .DS_Store

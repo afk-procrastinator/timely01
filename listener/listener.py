@@ -18,7 +18,7 @@ import threading
 from threading import Thread
 import numba.cuda.tests.cudadrv.test_detect
 
-commandKey = '?'
+commandKey = 't!'
 gmaps = googlemaps.Client(key=settings.GMAPS)
 token = settings.TOKEN
 bot = commands.Bot(command_prefix=commandKey)

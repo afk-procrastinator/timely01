@@ -9,7 +9,7 @@ import requests
 botColor = 0x176BD3
 
 
-commandKey = '?'
+commandKey = 't!'
 token = settings.TOKEN
 bot = commands.Bot(command_prefix=commandKey)
 
@@ -31,6 +31,7 @@ currenciesFirst = '''
 `HRK` : Croatian Kuna	
 `JPY` : Japanese Yen
 '''
+
 currenciesSecond = '''
 `THB` : Bhat [Thailand]
 `CHF` : Swiss Franc
@@ -65,16 +66,16 @@ class CurrencyListener(commands.Cog):
         final = round((amount * response), 2)
         embed = discord.Embed(title="💸💸💸", colour=discord.Colour(botColor))
         embed.add_field(name = "Converting {0} to {1}".format(base, currency), value = "`{0}` `{1}` in `{2}` is \n `{3} {4}`".format(amount, base, currency, final, currency), inline=True)
+        embed.set_footer(text = "Thanks to exchangeratesapi.io for the data!")
         await ctx.send(embed = embed)
-  
-        
-    
+
     @convert.error
     async def convertError(self, ctx, error):
         embed = discord.Embed(title="Possible currencies:", colour=discord.Colour(botColor))
         embed.add_field(name="Syntax", value="`?convert` `amount` `original currency` `converted currency`", inline = False)
         embed.add_field(name = "-", value = currenciesFirst, inline=True)
         embed.add_field(name = "-", value = currenciesSecond, inline=True)
+        embed.set_footer(text = "Thanks to exchangeratesapi.io for the data!")
         await ctx.send(embed = embed)
     
 def setup(client):

@@ -1,16 +1,15 @@
-import requests
-import json
+import asyncio
+import datetime
 
-currencyBase = input("from: ")
-currencyTo = input("to: ")
-amount = input("amount ")
+async def display_date(loop):
+    end_time = loop.time() + 5.0
+    while True:
+        print(datetime.datetime.now())
+        if (loop.time() + 1.0) >= end_time:
+            break
+        await asyncio.sleep(1)
 
-
-response = requests.get("https://api.exchangeratesapi.io/latest?base={}".format(currencyBase))
-
-data = json.loads(response.text)
-
-print(json.dumps(data, indent = 4))
-print(data["rates"][currencyTo])
-finalAmount = int(amount)*data["rates"][currencyTo]
-print(round(finalAmount, 2))
+loop = asyncio.get_event_loop()
+# Blocking call which returns when the display_date() coroutine is done
+loop.run_until_complete(display_date(loop))
+loop.close()

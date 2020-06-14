@@ -13,7 +13,7 @@ import time
 import sys
 import asyncio
 
-commandKey = '?'
+commandKey = 't!'
 gmaps = googlemaps.Client(key=settings.GMAPS)
 token = settings.TOKEN
 bot = commands.Bot(command_prefix=commandKey)
@@ -66,3 +66,6 @@ class TimeListener(commands.Cog):
         embed.add_field(name="Local time in: **" + region + "**", value= formatted)
         await ctx.send(embed=embed)
 
+def setup(client):
+    client.add_cog(TimeListener(client))
+    print('TimeListener is Loaded') 

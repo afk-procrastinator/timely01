@@ -9,7 +9,7 @@ import time
 import sys
 import asyncio
 
-commandKey = '?'
+commandKey = 't!'
 token = settings.TOKEN
 botColor = 0x176BD3
 bot = commands.Bot(command_prefix=commandKey)

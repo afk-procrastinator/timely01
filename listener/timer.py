@@ -15,7 +15,7 @@ import asyncio
 import json
 
 
-commandKey = '?'
+commandKey = 't!'
 gmaps = googlemaps.Client(key=settings.GMAPS)
 token = settings.TOKEN
 bot = commands.Bot(command_prefix=commandKey)
