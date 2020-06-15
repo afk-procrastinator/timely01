@@ -14,11 +14,10 @@ import sys
 import asyncio
 import json
 
-
-commandKey = 't!'
+from master import get_prefix
+bot = commands.Bot(command_prefix=get_prefix)
 gmaps = googlemaps.Client(key=settings.GMAPS)
 token = settings.TOKEN
-bot = commands.Bot(command_prefix=commandKey)
 tf = TimezoneFinder()
 lat = 0
 botColor = 0x176BD3

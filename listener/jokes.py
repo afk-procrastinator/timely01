@@ -9,9 +9,8 @@ import sys
 import asyncio
 import requests
 import json
-
-commandKey = 't!'
-bot = commands.Bot(command_prefix=commandKey)
+from master import get_prefix
+bot = commands.Bot(command_prefix=get_prefix)
 key = settings.OMDB
 botColor = 0x176BD3
 

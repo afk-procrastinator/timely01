@@ -9,10 +9,10 @@ import time
 import sys
 import asyncio
 
-commandKey = 't!'
+from master import get_prefix
+bot = commands.Bot(command_prefix=get_prefix)
 token = settings.TOKEN
 botColor = 0x176BD3
-bot = commands.Bot(command_prefix=commandKey)
 
 month = ["months", "month", "mo", "mos"]
 week = ["weeks", "week", "wk", "wks"]

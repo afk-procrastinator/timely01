@@ -16,11 +16,17 @@ import asyncio
 import json
 from pathlib import Path
 
+
+def get_prefix(client, message):
+    with open('files/prefix.json', 'r') as f:
+        prefixes = json.load(f)
+    return prefixes[str(message.guild.id)]
+
 data_folder = Path("files/")
 
 commandKey = 't!'
 token = settings.TOKEN
-bot = commands.Bot(command_prefix=commandKey)
+bot = commands.Bot(command_prefix=get_prefix)
 bot.remove_command("help")
 botColor = 0x176BD3
 
@@ -51,6 +57,7 @@ helpString = """
 `t!friendship` *Sends you a DM to access commands in your messages*
 """
 
+    
 class botCommandsListener(commands.Cog):
 
     @bot.command()

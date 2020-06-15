@@ -8,10 +8,10 @@ import json
 import requests
 botColor = 0x176BD3
 
+from master import get_prefix
+bot = commands.Bot(command_prefix=get_prefix)
 
-commandKey = 't!'
 token = settings.TOKEN
-bot = commands.Bot(command_prefix=commandKey)
 
 currenciesFirst = '''
 `CAD` : Canadian Dollar

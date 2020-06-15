@@ -17,10 +17,14 @@ import threading
 from threading import Thread
 from listener.reminder import runLoop
 
-commandKey = 't!'
+def get_prefix(client, message):
+    with open('prefix.json', 'r') as f:
+        prefixes = json.load(f)
+    return prefixes[str(message.guild.id)]
+
+bot = commands.Bot(command_prefix=get_prefix)
 gmaps = googlemaps.Client(key=settings.GMAPS)
 token = settings.TOKEN
-bot = commands.Bot(command_prefix=commandKey)
 bot.remove_command("help")
 tf = TimezoneFinder()
 
@@ -56,6 +60,30 @@ async def on_ready():
     print(bot.user.id)
     print('------')
     await bot.change_presence(activity=discord.Game(name="a game"))
+
+@bot.event
+async def on_guild_join(guild):
+    with open('prefix.json', 'r') as f:
+        prefixes = json.load(f)    
+    prefixes[str(guild.id)] = '.'
+    with open('prefix.json', 'w' ) as f:
+        json.dump(prefixes, f, indent = 4)
+        
+@bot.event
+async def on_guild_remove(guild):
+    with open('prefix.json', 'r') as f:
+        prefixes = json.load(f)    
+    prefixes.pop(str(guild.id))
+    with open('prefix.json', 'w' ) as f:
+        json.dump(prefixes, f, indent = 4)
+        
+@bot.command()
+async def prefix(ctx, prefix):
+    with open('prefix.json', 'r') as f:
+        prefixes = json.load(f)    
+    prefixes[str(ctx.guild.id)] = prefix
+    with open('prefix.json', 'w' ) as f:
+        json.dump(prefixes, f, indent = 4)
 
 # Command to delete certain roles: FOR TESTING ONLY
 @bot.command(pass_context=True)
