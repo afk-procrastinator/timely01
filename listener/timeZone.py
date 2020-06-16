@@ -13,7 +13,6 @@ import time
 import sys
 import asyncio
 
-
 from master import get_prefix
 bot = commands.Bot(command_prefix=get_prefix)
 gmaps = googlemaps.Client(key=settings.GMAPS)
@@ -53,16 +52,33 @@ def timeZone(self, input):
     shifted = utc.to(region)
     return shifted, region
 
+def getRegion(self, input):
+    utc = ar.utcnow()
+    shifted, region = timeZone(self, input)
+    shifted = utc.to(region)
+    formatted = shifted.format("HH:mm:ss")
+    region = region.split("/")[1].replace("_", " ")
+    return region, formatted
+
 class TimeListener(commands.Cog):
+    
+    @bot.command()
+    async def set(self, ctx, input: str):
+        region, formatted = getRegion(self, input)
+        user = ctx.message.author
+        role = get(ctx.guild.roles, name=region)
+        if role:
+            role = discord.utils.get(user.server.roles, name="role to add name")
+
+            await user.add_roles(ctx.message.author, role)
+        else:
+            await ctx.guild.create_role()
+            await user.add_roles(ctx.message.author, role)
+    
     # tz command: takes one arg, gives time at location
     @bot.command()
     async def tz(self, ctx, input: str):
-        utc = ar.utcnow()
-        shifted, region = timeZone(self, input)
-        shifted = utc.to(region)
-        formatted = shifted.format("HH:mm:ss")
-        print(formatted)
-        region = region.split("/")[1].replace("_", " ")
+        region, formatted = getRegion(self, input)
         embed = discord.Embed(title="**Timezone**", colour=discord.Colour(botColor))
         embed.add_field(name="Local time in: **" + region + "**", value= formatted)
         await ctx.send(embed=embed)

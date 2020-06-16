@@ -45,10 +45,13 @@ startup_extensions = [
     "listener.jokes"
 ]
 
+print("activate!!!")
+
 # On bot login, send info
 @bot.event
 async def on_ready():
     bot.remove_command('help')
+    print("onready")
     for extension in startup_extensions:
         try:
             bot.load_extension(extension)
@@ -59,7 +62,7 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('------')
-    await bot.change_presence(activity=discord.Game(name="a game"))
+    await bot.change_presence(activity=discord.Game(name="the Voight Kampff test"))
 
 @bot.event
 async def on_guild_join(guild):
