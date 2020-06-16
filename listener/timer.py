@@ -93,7 +93,12 @@ class TimerListener(commands.Cog):
     # error with the timer command 
     @timer.error
     async def timer_error(self, ctx, error):
-        print(error)
+        embed = discord.Embed(title="**Syntax Error**", colour = discord.Color(botColor))
+        prefix = get_prefix(bot, ctx.message)
+        embed.add_field(name = "_**Please try again!**_", value = "Example: \n`{}timer 10 seconds`".format(prefix))
+        message = await ctx.send(embed = embed)
+        await asyncio.sleep(2)
+        await message.delete()
 
     
 

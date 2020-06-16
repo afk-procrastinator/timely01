@@ -15,12 +15,7 @@ import csv
 import asyncio
 import json
 from pathlib import Path
-
-
-def get_prefix(client, message):
-    with open('files/prefix.json', 'r') as f:
-        prefixes = json.load(f)
-    return prefixes[str(message.guild.id)]
+from master import get_prefix
 
 data_folder = Path("files/")
 
@@ -29,49 +24,45 @@ bot = commands.Bot(command_prefix=get_prefix)
 bot.remove_command("help")
 botColor = 0x176BD3
 
-helpString = """
+helpString1 = """
 **Timezone Calculator: ** *Gives you current time and date in a location*
-`{}tz` `location`
-**e.g.** `{}tz new york`
+`{0}tz` `location`
+**e.g.** `{0}tz new york`
 
 **Currency Calculator: ** *Converts an amount of money between two currencies*
-`{}convert` `value` `currency` `to` `currency`
-**e.g.** `{}convert 10 usd to eur`
+`{0}convert` `value` `currency` `to` `currency`
+**e.g.** `{0}convert 10 usd to eur`
 
 **Time Distance: ** *Calculates the number of days/weeks/months/years between today and a date*
-`{}dis` `date: [DD/MM/YYYY]` `time units [days, weeks, months, years]`
-**e.g.** `{}dis 30/08/2021 weeks`
+`{0}dis` `date: [DD/MM/YYYY]` `time units [days, weeks, months, years]`
+**e.g.** `{0}dis 30/08/2021 weeks`
 
 **Reminder & Timer: ** 
-`{}remind` `@user` `message` `amount of time` *Reminds you of a message after a certain amount of time by sending you a DM*
-**e.g.** `{}remind @TimeVibe "go to sleep" 20 mins`
+`{0}remind` `@user` `message` `amount of time` *Reminds you of a message after a certain amount of time by sending you a DM*
+**e.g.** `{0}remind @TimeVibe "go to sleep" 20 mins`
 
-`{}timer` `amount` `units` *Shows a timer in chat! Good for short times (> 1 hour)
-**e.g.** `{}timer 10 seconds`
+`{0}timer` `amount` `units` *Shows a timer in chat! Good for short times (> 1 hour)
+**e.g.** `{0}timer 10 seconds`
 
-**Fun stuff:**
-`{}movie` `title` *Gives IMDB data on a movie*
-**e.g.** `{}movie blade runnner`
-
-`{}friendship` *Sends you a DM to access commands in your messages*
-
-`{}hltb` `title` *Returns information on how long to beat a given videogame. Data from HLTB.*
 """
 
-    
+helpString2 = """**Fun stuff:**
+`{0}movie` `title` *Gives IMDB data on a movie*
+**e.g.** `{0}movie blade runnner`
+
+`{0}friendship` *Sends you a DM to access commands in your messages*
+
+`{0}hltb` `title` *Returns information on how long to beat a given videogame. Data from HLTB.*
+"""
 class botCommandsListener(commands.Cog):
 
     @bot.command()
     async def help(self, ctx):
         prefix = get_prefix(bot, ctx.message)
         embed = discord.Embed(title="Help is here!", colour=discord.Colour(botColor))
-        embed.add_field(name=" __**Command Categories:**__", value=helpString.format(prefix))
+        embed.add_field(name=" __**Command Categories:**__", value=helpString1.format(prefix))
+        embed.add_field(name=" __**Command Categories:**__", value=helpString2.format(prefix))
         await ctx.send(embed=embed)
-
-    @bot.command() #NON OPERATIONAL RN 
-    async def status(self, ctx, *args):
-        game = discord.Game(args)
-        await ctx.change_presence(self, status=bot.status.idle, activity=game)
         
     @bot.command()
     async def friendship(self, ctx):

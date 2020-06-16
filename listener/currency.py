@@ -71,12 +71,15 @@ class CurrencyListener(commands.Cog):
 
     @convert.error
     async def convertError(self, ctx, error):
+        prefix = get_prefix(bot, ctx.message)
         embed = discord.Embed(title="Possible currencies:", colour=discord.Colour(botColor))
-        embed.add_field(name="Syntax", value="`?convert` `amount` `original currency` `converted currency`", inline = False)
+        embed.add_field(name="Syntax", value="`{}convert 10 USD RUB".format(prefix), inline = False)
         embed.add_field(name = "-", value = currenciesFirst, inline=True)
         embed.add_field(name = "-", value = currenciesSecond, inline=True)
         embed.set_footer(text = "Thanks to exchangeratesapi.io for the data!")
-        await ctx.send(embed = embed)
+        message = await ctx.send(embed = embed)
+        await asyncio.sleep(2)
+        await message.delete()
     
 def setup(client):
     client.add_cog(CurrencyListener(client))

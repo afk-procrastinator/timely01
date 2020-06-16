@@ -17,8 +17,47 @@ import threading
 from threading import Thread
 from listener.reminder import runLoop
 
+asciiString = """
+                        .s$$$Ss.
+            .8,         $$$. _. .              ..sS$$$$$"  ...,.;
+ o.   ,@..  88        =.$"$'  '          ..sS$$$$$$$$$$$$s. _;"'
+  @@@.@@@. .88.   `  ` ""l. .sS$$.._.sS$$$$$$$$$$$$S'"'
+   .@@@q@@.8888o.         .s$$$$$$$$$$$$$$$$$$$$$'
+     .:`@@@@33333.       .>$$$$$$$$$$$$$$$$$$$$'
+     .: `@@@@333'       ..>$$$$$$$$$$$$$$$$$$$'
+      :  `@@333.     `.,   s$$$$$$$$$$$$$$$$$'
+      :   `@33       $$ S.s$$$$$$$$$$$$$$$$$'
+      .S   `Y      ..`  ,"$' `$$$$$$$$$$$$$$
+      $s  .       ..S$s,    . .`$$$$$$$$$$$$.
+      $s .,      ,s ,$$$$,,sS$s.$$$$$$$$$$$$$.
+      / /$$SsS.s. ..s$$$$$$$$$$$$$$$$$$$$$$$$$.
+     /`.`$$$$$dN.ssS$$'`$$$$$$$$$$$$$$$$$$$$$$$.
+    ///   `$$$$$$$$$'    `$$$$$$$$$$$$$$$$$$$$$$.
+   ///|     `S$$S$'       `$$$$$$$$$$$$$$$$$$$$$$.
+  / /                      $$$$$$$$$$$$$$$$$$$$$.
+                           `$$$$$$$$$$$$$$$$$$$$$s.
+                            $$$"'        .?T$$$$$$$
+                           .$'        ...      ?$$#\
+                           !       -=S$$$$$s
+                         .!       -=s$$'  `$=-_      :
+                        ,        .$$$'     `$,       .|
+                       ,       .$$$'          .        ,
+                      ,     ..$$$'
+                          .s$$$'                 `s     .
+                   .   .s$$$$'                    $s. ..$s
+                  .  .s$$$$'                      `$s=s$$$
+                    .$$$$'                         ,    $$s
+               `   " .$$'                               $$$
+               ,   s$$'                              .  $$$s
+            ` .s..s$'                                .s ,$$
+             .s$$$'                                   "s$$$,
+          -   $$$'                                     .$$$$.
+        ."  .s$$s                                     .$',',$.
+        $s.s$$$$S..............   ................    $$....s$s......
+"""
+
 def get_prefix(client, message):
-    with open('prefix.json', 'r') as f:
+    with open('files/prefix.json', 'r') as f:
         prefixes = json.load(f)
     return prefixes[str(message.guild.id)]
 
@@ -62,30 +101,27 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('------')
+    print(asciiString)
     await bot.change_presence(activity=discord.Game(name="the Voight Kampff test"))
 
 @bot.event
 async def on_guild_join(guild):
-    with open('prefix.json', 'r') as f:
-        prefixes = json.load(f)    
-    prefixes[str(guild.id)] = '.'
-    with open('prefix.json', 'w' ) as f:
-        json.dump(prefixes, f, indent = 4)
+    with open('files/{}.json'.format(guild.id), 'w+') as f:
+        startData = {"prefix" : "."}
+        json.dump(startData, f, indent = 4)
+
         
 @bot.event
 async def on_guild_remove(guild):
-    with open('prefix.json', 'r') as f:
-        prefixes = json.load(f)    
-    prefixes.pop(str(guild.id))
-    with open('prefix.json', 'w' ) as f:
-        json.dump(prefixes, f, indent = 4)
+    os.remove("files/{}.json".format(guild.id))
+    print("deleted:" + guild.id)
         
 @bot.command()
 async def prefix(ctx, prefix):
-    with open('prefix.json', 'r') as f:
+    with open('files/{}.json'.format(ctx.guild.id), 'r') as f:
         prefixes = json.load(f)    
-    prefixes[str(ctx.guild.id)] = prefix
-    with open('prefix.json', 'w' ) as f:
+    prefixes["prefix"] = prefix
+    with open('files/{}.json'.format(ctx.guild.id), 'w' ) as f:
         json.dump(prefixes, f, indent = 4)
 
 # Command to delete certain roles: FOR TESTING ONLY

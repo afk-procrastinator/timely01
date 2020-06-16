@@ -45,7 +45,9 @@ class JokesListener(commands.Cog):
             embed = discord.Embed(title="**Search Error**", colour = discord.Color(botColor))
             prefix = get_prefix(bot, ctx.message)
             embed.add_field(name = "_**Please try again!**_", value = "Your query returned no significant data. Please try again! \n \nExample: `{0}hltb Undertale`".format(prefix))
-            await ctx.send(embed = embed)
+            message = await ctx.send(embed = embed)
+            await asyncio.sleep(2)
+            await message.delete()
 
            
     @bot.command()
@@ -84,14 +86,23 @@ class JokesListener(commands.Cog):
         embed.set_thumbnail(url=poster)
         embed.add_field(name="🎞🎞🎞🎞🎞🎞", value=stringOne + stringTwo, inline = True)
         await ctx.send(embed = embed)   
+    
     @movie.error
     async def movie_error(self, ctx, error):
         embed = discord.Embed(title="Movie search error >:(", colour=discord.Colour(botColor))
         embed.add_field(name="🎞🎞🎞🎞🎞🎞", value="**Please retry with a different search input!** \n Syntax is: `t!movie` `query`")
         await ctx.send(embed = embed)
         
-
-
+    @hltb.error
+    async def hltb_error(self, ctx, error):
+        prefix = get_prefix(bot, ctx.message)
+        embed = discord.Embed(title="Videogame search error >:(", colour=discord.Colour(botColor))
+        embed.add_field(name="🎞🎞🎞🎞🎞🎞", value="**Please retry with a different search input!** \n Syntax is: `{}hltb Undertale`".format(prefix))
+        message = await ctx.send(embed = embed)
+        await asyncio.sleep(2)
+        await message.delete()
+        
+        
        
         
 def setup(client):

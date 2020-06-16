@@ -126,9 +126,12 @@ class ReminderListener(commands.Cog):
 
     @remind.error
     async def remind_error(self, ctx, error):
+        prefix = get_prefix(bot, ctx.message)
         embed = discord.Embed(title="Syntax error >:(", colour = discord.Colour(botColor))
-        embed.add_field(name = "Correct syntax:", value = "`?remind @user \"message\" time`\ne.g. `?remind @TimeVibe \"Your message here\" 1 week 10 hours 3 minutes` \n \n *`@user` field is optional if the reminder is for yourself.*")
-        await ctx.send(embed = embed)
+        embed.add_field(name = "Correct syntax:", value = "{}?remind @user \"message\" time`\ne.g. `?remind @TimeVibe \"Your message here\" 1 week 10 hours 3 minutes` \n \n *`@user` field is optional if the reminder is for yourself.*".format(prefix))
+        message = await ctx.send(embed = embed)
+        await asyncio.sleep(2)
+        await message.delete()
 
         
 def setup(client):

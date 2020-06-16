@@ -99,6 +99,15 @@ class DistanceListener(commands.Cog):
         embed = discord.Embed(title="Days until: {0}".format(date), colour=discord.Colour(botColor))
         embed.add_field(name="⏰", value=string)
         await ctx.send(embed = embed)
+        
+    @dis.error
+    async def dis_error(self, ctx, error):
+        prefix = get_prefix(bot, ctx.message)
+        embed = discord.Embed(title="Distance error:", color = discord.Colour(botColor))
+        embed.add_field(name="Example syntax:" ,value = "`{}dis 30/08/2021 days`".format(prefix))
+        message = await ctx.send(embed = embed)
+        await asyncio.sleep(2)
+        await message.delete()
 
 def setup(client):
     client.add_cog(DistanceListener(client))

@@ -6,6 +6,6 @@ import asyncio
 import json
 
 def get_prefix(client, message):
-    with open('prefix.json', 'r') as f:
+    with open('files/{}.json'.format(message.guild.id), 'r') as f:
         prefixes = json.load(f)
-    return prefixes[str(message.guild.id)]
+    return prefixes["prefix"]

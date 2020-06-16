@@ -83,6 +83,15 @@ class TimeListener(commands.Cog):
         embed.add_field(name="Local time in: **" + region + "**", value= formatted)
         await ctx.send(embed=embed)
 
+    @tz.error
+    async def tz_error(self, ctx, error):
+        embed = discord.Embed(title="**Timezone Error**", colour = discord.Color(botColor))
+        prefix = get_prefix(bot, ctx.message)
+        embed.add_field(name = "_**Please try again!**_", value = "Your query returned no significant data. Please try again! \n \nExample: `{0}tz moscow`".format(prefix))
+        message = await ctx.send(embed = embed)
+        await asyncio.sleep(2)
+        await message.delete()
+
 def setup(client):
     client.add_cog(TimeListener(client))
     print('TimeListener is Loaded') 
