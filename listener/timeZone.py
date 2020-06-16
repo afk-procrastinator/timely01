@@ -13,6 +13,7 @@ import time
 import sys
 import asyncio
 import json
+import re
 
 from master import get_prefix
 bot = commands.Bot(command_prefix=get_prefix)
@@ -73,16 +74,30 @@ class TimeListener(commands.Cog):
                 data.update(addData)
                 file.seek(0)
                 json.dump(data, file)
+        embed = discord.Embed(title="**Timezone set!**", colour=discord.Colour(botColor))
+        embed.add_field(name="🌍🌍🌍", value= "Timezone for <@{0}> is set to {1}".format(ctx.message.author.id, region))
+        await ctx.send(embed=embed)
 
-    
     # tz command: takes one arg, gives time at location
     @bot.command()
-    async def tz(self, ctx, input: str):
+    async def tz(self, ctx, input):
+        prefix = get_prefix(bot, ctx.message)
+        if input.startswith("<"):
+            string = re.sub("<|>|@|!", "", input)
+            print(string)
+            with open('files/{}.json'.format(ctx.guild.id), 'r') as file:
+                data = json.load(file)
+                if string in data:
+                    input = data[string]
+                else:
+                    embed = discord.Embed(title="**Timezone not set**", colour=discord.Colour(botColor))
+                    embed.add_field(name="🌍🌍🌍" , value= "User {0} has not set a region! Use `{1}tzset location` to set!".format(input, prefix))
+                    await ctx.send(embed=embed)
         region, formatted = getRegion(self, input)
         embed = discord.Embed(title="**Timezone**", colour=discord.Colour(botColor))
         embed.add_field(name="Local time in: **" + region + "**", value= formatted)
         await ctx.send(embed=embed)
-
+                
     @tz.error
     async def tz_error(self, ctx, error):
         embed = discord.Embed(title="**Timezone Error**", colour = discord.Color(botColor))
