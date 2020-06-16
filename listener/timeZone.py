@@ -12,6 +12,7 @@ import settings
 import time
 import sys
 import asyncio
+import json
 
 from master import get_prefix
 bot = commands.Bot(command_prefix=get_prefix)
@@ -63,17 +64,16 @@ def getRegion(self, input):
 class TimeListener(commands.Cog):
     
     @bot.command()
-    async def set(self, ctx, input: str):
+    async def tzset(self, ctx, input: str):
         region, formatted = getRegion(self, input)
         user = ctx.message.author
-        role = get(ctx.guild.roles, name=region)
-        if role:
-            role = discord.utils.get(user.server.roles, name="role to add name")
+        with open('files/{}.json'.format(ctx.guild.id), 'r+') as file:
+                addData = {str(user.id): region}
+                data = json.load(file)
+                data.update(addData)
+                file.seek(0)
+                json.dump(data, file)
 
-            await user.add_roles(ctx.message.author, role)
-        else:
-            await ctx.guild.create_role()
-            await user.add_roles(ctx.message.author, role)
     
     # tz command: takes one arg, gives time at location
     @bot.command()

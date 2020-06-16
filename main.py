@@ -16,6 +16,7 @@ import json
 import threading
 from threading import Thread
 from listener.reminder import runLoop
+from master import get_prefix
 
 asciiString = """
                         .s$$$Ss.
@@ -55,11 +56,6 @@ asciiString = """
         ."  .s$$s                                     .$',',$.
         $s.s$$$$S..............   ................    $$....s$s......
 """
-
-def get_prefix(client, message):
-    with open('files/prefix.json', 'r') as f:
-        prefixes = json.load(f)
-    return prefixes[str(message.guild.id)]
 
 bot = commands.Bot(command_prefix=get_prefix)
 gmaps = googlemaps.Client(key=settings.GMAPS)
@@ -109,7 +105,6 @@ async def on_guild_join(guild):
     with open('files/{}.json'.format(guild.id), 'w+') as f:
         startData = {"prefix" : "."}
         json.dump(startData, f, indent = 4)
-
         
 @bot.event
 async def on_guild_remove(guild):
