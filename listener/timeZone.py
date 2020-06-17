@@ -14,8 +14,8 @@ import sys
 import asyncio
 import json
 import re
-
 from master import get_prefix
+
 bot = commands.Bot(command_prefix=get_prefix)
 gmaps = googlemaps.Client(key=settings.GMAPS)
 token = settings.TOKEN
@@ -73,7 +73,7 @@ class TimeListener(commands.Cog):
                 data = json.load(file)
                 data.update(addData)
                 file.seek(0)
-                json.dump(data, file)
+                json.dump(data, file, indent=4)
         color = int(get_color(bot, ctx.message))
         embed = discord.Embed(title="**Timezone set!**", colour=discord.Colour(color))
         embed.add_field(name="🌍🌍🌍", value= "Timezone for <@{0}> is set to {1}".format(ctx.message.author.id, region))
@@ -102,7 +102,7 @@ class TimeListener(commands.Cog):
                 
     @tz.error
     async def tz_error(self, ctx, error):
-        embed = discord.Embed(title="**Timezone Error**", colour = discord.Color(botColor))
+        embed = discord.Embed(title="**Timezone Error**", colour = discord.Color(color))
         prefix = get_prefix(bot, ctx.message)
         embed.add_field(name = "_**Please try again!**_", value = "Your query returned no significant data. Please try again! \n \nExample: `{0}tz moscow`".format(prefix))
         message = await ctx.send(embed = embed)

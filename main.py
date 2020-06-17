@@ -77,7 +77,8 @@ startup_extensions = [
     "listener.timer",
     "listener.currency",
     "listener.botCommands",
-    "listener.jokes"
+    "listener.jokes",
+    "listener.birthday"
 ]
 
 print("activate!!!")
