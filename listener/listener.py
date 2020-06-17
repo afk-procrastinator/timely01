@@ -24,7 +24,7 @@ gmaps = googlemaps.Client(key=settings.GMAPS)
 token = settings.TOKEN
 tf = TimezoneFinder()
 lat = 0
-botColor = 0x176BD3
+from master import get_color
 lon = 0
 region = ""
 timeVibeRole = False
@@ -65,7 +65,8 @@ class GeneralListener(commands.Cog):
     @setup.error
     async def setup_error(self, ctx, error):
        if isinstance(error, commands.MissingRequiredArgument):
-        embed = discord.Embed(title="**Argument error**", colour=discord.Colour(botColor))
+        color = int(get_color(bot, ctx.message))
+        embed = discord.Embed(title="**Argument error**", colour=discord.Colour(color))
         embed.add_field(name="Possible arguments:", value="`role` - creates role for bot, only needed for initialization.")
         await ctx.send(embed=embed)
     

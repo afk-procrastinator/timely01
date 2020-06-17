@@ -13,6 +13,7 @@ import time
 import sys
 import asyncio
 import json
+from master import get_color
 
 from master import get_prefix
 bot = commands.Bot(command_prefix=get_prefix)
@@ -20,7 +21,7 @@ gmaps = googlemaps.Client(key=settings.GMAPS)
 token = settings.TOKEN
 tf = TimezoneFinder()
 lat = 0
-botColor = 0x176BD3
+from master import botColor
 lon = 0
 region = ""
 timeVibeRole = False
@@ -38,11 +39,12 @@ class TimerListener(commands.Cog):
     @bot.command()
     async def timer(self, ctx, arg1: int, arg2: str):
         units = ""
+        color = int(get_color(bot, ctx.message))
         possibleCommands = ["seconds", "sec", "secs", "s", "minutes", "hours", "minute", "hour", "m", "mins", "hr", "hrs"]
         if arg2 in possibleCommands:
             units = arg2
         else:
-            embed = discord.Embed(title="Timer error:", colour=discord.Colour(botColor))
+            embed = discord.Embed(title="Timer error:", colour=discord.Colour(color))
             embed.add_field(name="Syntax error", value="Whoops! Syntax error. Command should be: \n ```?timer length unit``` \n Units can only be `hours`, `minutes`, or `seconds`. Please use the `?reminder` command for anything longer.")
             await ctx.send(embed = embed)
             return
@@ -54,7 +56,7 @@ class TimerListener(commands.Cog):
             print("hrs")
         totalTime = time.strftime("%H:%M:%S", time.gmtime(arg1))
         if arg1 > 43200:
-            embed = discord.Embed(title="Timer too long!", colour=discord.Colour(botColor))
+            embed = discord.Embed(title="Timer too long!", colour=discord.Colour(color))
             embed.add_field(name="Progress Bar", value="Your timer is over 12 hours! Why don't you try the `?reminder` command instead?")
             await ctx.send(embed=embed)
             return
@@ -66,7 +68,7 @@ class TimerListener(commands.Cog):
             spaces = ' ' * (bar_length - len(arrow))
             timeRemaining = time.strftime("%H:%M:%S", time.gmtime(int(arg1-t)))
             string = ("```\rPercent: [{0}] {1}%```".format(arrow + spaces, int(round(percent * 100))))
-            embed = discord.Embed(title="⏱: {0}".format(timeRemaining), colour=discord.Colour(botColor))
+            embed = discord.Embed(title="⏱: {0}".format(timeRemaining), colour=discord.Colour(color))
             embed.add_field(name="⏳", value=string)
             if t == 0:
                 message = await ctx.send(embed=embed)
@@ -77,11 +79,11 @@ class TimerListener(commands.Cog):
             if cancelTimer == True:
                 print("cancelled")
                 string = ("_**CANCELLED_**")
-                embed = discord.Embed(title="⏱", colour=discord.Colour(botColor))
+                embed = discord.Embed(title="⏱", colour=discord.Colour(color))
                 embed.add_field(name="⏱", value=string)
                 return
         string = ("_**FINISHED**_")
-        embed = discord.Embed(title="💫🎉🎉🎉💫", colour=discord.Colour(botColor))
+        embed = discord.Embed(title="💫🎉🎉🎉💫", colour=discord.Colour(color))
         embed.add_field(name="💫🎉🎉🎉💫", value=string)
         await message.edit(embed=embed)
 
@@ -93,7 +95,8 @@ class TimerListener(commands.Cog):
     # error with the timer command 
     @timer.error
     async def timer_error(self, ctx, error):
-        embed = discord.Embed(title="**Syntax Error**", colour = discord.Color(botColor))
+        color = int(get_color(bot, ctx.message))
+        embed = discord.Embed(title="**Syntax Error**", colour = discord.Color(color))
         prefix = get_prefix(bot, ctx.message)
         embed.add_field(name = "_**Please try again!**_", value = "Example: \n`{}timer 10 seconds`".format(prefix))
         message = await ctx.send(embed = embed)

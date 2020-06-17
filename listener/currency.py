@@ -6,8 +6,7 @@ import settings
 import asyncio
 import json
 import requests
-botColor = 0x176BD3
-
+from master import get_color
 from master import get_prefix
 bot = commands.Bot(command_prefix=get_prefix)
 
@@ -59,12 +58,13 @@ async def getAPI(self, base, currency):
 class CurrencyListener(commands.Cog):
     @bot.command()
     async def convert(self, ctx, amount, base: str, to: str, currency: str):
+        color = int(get_color(bot, ctx.message))
         base = base.upper()
         currency = currency.upper()
         response = await getAPI(self, base, currency)
         amount = int(amount)
         final = round((amount * response), 2)
-        embed = discord.Embed(title="💸💸💸", colour=discord.Colour(botColor))
+        embed = discord.Embed(title="💸💸💸", colour=discord.Colour(color))
         embed.add_field(name = "Converting {0} to {1}".format(base, currency), value = "`{0}` `{1}` in `{2}` is \n `{3} {4}`".format(amount, base, currency, final, currency), inline=True)
         embed.set_footer(text = "Thanks to exchangeratesapi.io for the data!")
         await ctx.send(embed = embed)
@@ -72,7 +72,8 @@ class CurrencyListener(commands.Cog):
     @convert.error
     async def convertError(self, ctx, error):
         prefix = get_prefix(bot, ctx.message)
-        embed = discord.Embed(title="Possible currencies:", colour=discord.Colour(botColor))
+        color = int(get_color(bot, ctx.message))
+        embed = discord.Embed(title="Possible currencies:", colour=discord.Colour(color))
         embed.add_field(name="Syntax", value="`{}convert 10 USD RUB".format(prefix), inline = False)
         embed.add_field(name = "-", value = currenciesFirst, inline=True)
         embed.add_field(name = "-", value = currenciesSecond, inline=True)

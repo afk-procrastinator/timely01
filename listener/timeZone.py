@@ -21,7 +21,7 @@ gmaps = googlemaps.Client(key=settings.GMAPS)
 token = settings.TOKEN
 tf = TimezoneFinder()
 lat = 0
-botColor = 0x176BD3
+from master import get_color
 lon = 0
 region = ""
 
@@ -74,13 +74,15 @@ class TimeListener(commands.Cog):
                 data.update(addData)
                 file.seek(0)
                 json.dump(data, file)
-        embed = discord.Embed(title="**Timezone set!**", colour=discord.Colour(botColor))
+        color = int(get_color(bot, ctx.message))
+        embed = discord.Embed(title="**Timezone set!**", colour=discord.Colour(color))
         embed.add_field(name="🌍🌍🌍", value= "Timezone for <@{0}> is set to {1}".format(ctx.message.author.id, region))
         await ctx.send(embed=embed)
 
     # tz command: takes one arg, gives time at location
     @bot.command()
     async def tz(self, ctx, input):
+        color = int(get_color(bot, ctx.message))
         prefix = get_prefix(bot, ctx.message)
         if input.startswith("<"):
             string = re.sub("<|>|@|!", "", input)
@@ -90,11 +92,11 @@ class TimeListener(commands.Cog):
                 if string in data["users"]:
                     input = data["users"][string]
                 else:
-                    embed = discord.Embed(title="**Timezone not set**", colour=discord.Colour(botColor))
+                    embed = discord.Embed(title="**Timezone not set**", colour=discord.Colour(color))
                     embed.add_field(name="🌍🌍🌍" , value= "User {0} has not set a region! Use `{1}tzset location` to set!".format(input, prefix))
                     await ctx.send(embed=embed)
         region, formatted = getRegion(self, input)
-        embed = discord.Embed(title="**Timezone**", colour=discord.Colour(botColor))
+        embed = discord.Embed(title="**Timezone**", colour=discord.Colour(color))
         embed.add_field(name="Local time in: **" + region + "**", value= formatted)
         await ctx.send(embed=embed)
                 

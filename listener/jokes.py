@@ -13,12 +13,13 @@ from master import get_prefix
 from howlongtobeatpy import HowLongToBeat
 bot = commands.Bot(command_prefix=get_prefix)
 key = settings.OMDB
-botColor = 0x176BD3
+from master import get_color
 
 
 class JokesListener(commands.Cog):
     @bot.command()
     async def hltb(self, ctx, *args):
+        color = int(get_color(bot, ctx.message))
         search = (" ".join(args))
         results = await HowLongToBeat().async_search(search)
         if results is not None and len(results) > 0:
@@ -37,19 +38,18 @@ class JokesListener(commands.Cog):
             mainString = "It will take **{0} {1}** to beat {2}".format(gameplayMain, gameplayMainUnit, gameplayMainLabel)
             mainExtraString = "It will take **{0} {1}** to beat {2}".format(gameplayMainExtra, gameplayMainExtraUnit, gameplayMainExtraLabel)
             completionsitString = "It will take **{0} {1}** to beat {2}".format(gameplayCompletionist, gameplayCompletionistUnit, gameplayCompletionistLabel)
-            embed = discord.Embed(title="**How Long to Beat {}**".format(name), colour=discord.Colour(botColor))
+            embed = discord.Embed(title="**How Long to Beat {}**".format(name), colour=discord.Colour(color))
             embed.set_thumbnail(url=image)
             embed.add_field(name="🕹🕹🕹", value = "{0} \n{1} \n{2}".format(mainString, mainExtraString, completionsitString))
             await ctx.send(embed=embed)
         else:
-            embed = discord.Embed(title="**Search Error**", colour = discord.Color(botColor))
+            embed = discord.Embed(title="**Search Error**", colour = discord.Color(color))
             prefix = get_prefix(bot, ctx.message)
             embed.add_field(name = "_**Please try again!**_", value = "Your query returned no significant data. Please try again! \n \nExample: `{0}hltb Undertale`".format(prefix))
             message = await ctx.send(embed = embed)
             await asyncio.sleep(2)
             await message.delete()
-
-           
+    
     @bot.command()
     async def movie(self, ctx, *args):
         search = ("_".join(args))
@@ -81,15 +81,16 @@ class JokesListener(commands.Cog):
         **Metascore:** {3}
         **IMDB rating:** {4}
         """.format(director, plot, awards, metascore, imdbRating)
-        
-        embed = discord.Embed(title="Movie search: {}".format(title), colour=discord.Colour(botColor))
+        color = int(get_color(bot, ctx.message))
+        embed = discord.Embed(title="Movie search: {}".format(title), colour=discord.Colour(color))
         embed.set_thumbnail(url=poster)
         embed.add_field(name="🎞🎞🎞🎞🎞🎞", value=stringOne + stringTwo, inline = True)
         await ctx.send(embed = embed)   
     
     @movie.error
     async def movie_error(self, ctx, error):
-        embed = discord.Embed(title="Movie search error >:(", colour=discord.Colour(botColor))
+        color = int(get_color(bot, ctx.message))
+        embed = discord.Embed(title="Movie search error >:(", colour=discord.Colour(color))
         embed.add_field(name="🎞🎞🎞🎞🎞🎞", value="**Please retry with a different search input!** \n Syntax is: `t!movie` `query`")
         await ctx.send(embed = embed)
         

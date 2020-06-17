@@ -12,7 +12,7 @@ import asyncio
 from master import get_prefix
 bot = commands.Bot(command_prefix=get_prefix)
 token = settings.TOKEN
-botColor = 0x176BD3
+from master import get_color
 
 month = ["months", "month", "mo", "mos"]
 week = ["weeks", "week", "wk", "wks"]
@@ -91,19 +91,21 @@ class DistanceListener(commands.Cog):
     @bot.command()
     async def dis(self, ctx, arg1:str, arg2:str):
         now = ar.utcnow()
+        color = int(get_color(bot, ctx.message))
         try:
             startDateParsed = ar.get(arg1, 'DD/MM/YYYY')
         except ar.ParserError:
             print("error")
         string, date = difference(self, startDateParsed, arg2)
-        embed = discord.Embed(title="Days until: {0}".format(date), colour=discord.Colour(botColor))
+        embed = discord.Embed(title="Days until: {0}".format(date), colour=discord.Colour(color))
         embed.add_field(name="⏰", value=string)
         await ctx.send(embed = embed)
         
     @dis.error
     async def dis_error(self, ctx, error):
+        color = int(get_color(bot, ctx.message))
         prefix = get_prefix(bot, ctx.message)
-        embed = discord.Embed(title="Distance error:", color = discord.Colour(botColor))
+        embed = discord.Embed(title="Distance error:", color = discord.Colour(color))
         embed.add_field(name="Example syntax:" ,value = "`{}dis 30/08/2021 days`".format(prefix))
         message = await ctx.send(embed = embed)
         await asyncio.sleep(2)

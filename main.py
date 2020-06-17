@@ -97,27 +97,20 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('------')
-    print(asciiString)
+    #print(asciiString)
     await bot.change_presence(activity=discord.Game(name="the Voight Kampff test"))
 
 @bot.event
 async def on_guild_join(guild):
     with open('files/{}.json'.format(guild.id), 'w+') as f:
-        startData = {"info":{"prefix" : "."}}
+        startData = {"info":{"prefix" : ".", "color" : 0x176BD3}}
         json.dump(startData, f, indent = 4)
         
 @bot.event
 async def on_guild_remove(guild):
     os.remove("files/{}.json".format(guild.id))
     print("deleted:" + str(guild.id))
-        
-@bot.command()
-async def prefix(ctx, prefix):
-    with open('files/{}.json'.format(ctx.guild.id), 'r') as f:
-        prefixes = json.load(f)    
-    prefixes["prefix"] = prefix
-    with open('files/{}.json'.format(ctx.guild.id), 'w' ) as f:
-        json.dump(prefixes, f, indent = 4)
+    
 
 # Command to delete certain roles: FOR TESTING ONLY
 @bot.command(pass_context=True)

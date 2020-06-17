@@ -22,7 +22,7 @@ from master import get_prefix
 bot = commands.Bot(command_prefix=get_prefix)
 gmaps = googlemaps.Client(key=settings.GMAPS)
 token = settings.TOKEN
-botColor = 0x176BD3
+from master import get_color
 userSend = discord.Member
 
 month = ["months", "month", "mo", "mos"]
@@ -43,7 +43,8 @@ async def sendDM(input):
     timeCreated = input["timeCreated"]
     message = input["message"]
     channel = await userSend.create_dm()
-    embed = discord.Embed(title="⏲ Your reminder is here! ⏲", colour=discord.Colour(botColor))
+    color = int(get_color(bot, channel.message))
+    embed = discord.Embed(title="⏲ Your reminder is here! ⏲", colour=discord.Colour(color))
     embed.add_field(name = "The reminder was set at:", value = timeCreated + " UTC" )
     embed.add_field(name = "Your message is:", value = message)
     await channel.send(embed = embed)
@@ -119,7 +120,8 @@ class ReminderListener(commands.Cog):
             i += 2
         dictToSend = dict({"timeAdd": timeAdd, "user": userSend.id, "timeCreated": timeCreated, "message": message})
         await addToLoop(self, dictToSend)
-        embed = discord.Embed(title="⏲ Your reminder is set! ⏲", colour=discord.Colour(botColor))
+        color = int(get_color(bot, ctx.message))
+        embed = discord.Embed(title="⏲ Your reminder is set! ⏲", colour=discord.Colour(color))
         embed.add_field(name = "You will be reminded in:", value = str(timeAdd) + " minutes")
         embed.add_field(name = "Your message is:", value = message)
         await ctx.send(embed = embed)
@@ -127,7 +129,8 @@ class ReminderListener(commands.Cog):
     @remind.error
     async def remind_error(self, ctx, error):
         prefix = get_prefix(bot, ctx.message)
-        embed = discord.Embed(title="Syntax error >:(", colour = discord.Colour(botColor))
+        color = int(get_color(bot, ctx.message))
+        embed = discord.Embed(title="Syntax error >:(", colour = discord.Colour(color))
         embed.add_field(name = "Correct syntax:", value = "{}?remind @user \"message\" time`\ne.g. `?remind @TimeVibe \"Your message here\" 1 week 10 hours 3 minutes` \n \n *`@user` field is optional if the reminder is for yourself.*".format(prefix))
         message = await ctx.send(embed = embed)
         await asyncio.sleep(2)
