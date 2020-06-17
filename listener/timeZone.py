@@ -69,7 +69,7 @@ class TimeListener(commands.Cog):
         region, formatted = getRegion(self, input)
         user = ctx.message.author
         with open('files/{}.json'.format(ctx.guild.id), 'r+') as file:
-                addData = {str(user.id): region}
+                addData = {"users":{str(user.id): region}}
                 data = json.load(file)
                 data.update(addData)
                 file.seek(0)
@@ -87,8 +87,8 @@ class TimeListener(commands.Cog):
             print(string)
             with open('files/{}.json'.format(ctx.guild.id), 'r') as file:
                 data = json.load(file)
-                if string in data:
-                    input = data[string]
+                if string in data["users"]:
+                    input = data["users"][string]
                 else:
                     embed = discord.Embed(title="**Timezone not set**", colour=discord.Colour(botColor))
                     embed.add_field(name="🌍🌍🌍" , value= "User {0} has not set a region! Use `{1}tzset location` to set!".format(input, prefix))

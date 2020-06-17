@@ -8,4 +8,4 @@ import json
 def get_prefix(client, message):
     with open('files/{}.json'.format(message.guild.id), 'r+') as f:
         prefixes = json.load(f)
-    return prefixes["prefix"]
+    return prefixes["info"]["prefix"]

@@ -103,13 +103,13 @@ async def on_ready():
 @bot.event
 async def on_guild_join(guild):
     with open('files/{}.json'.format(guild.id), 'w+') as f:
-        startData = {"prefix" : "."}
+        startData = {"info":{"prefix" : "."}}
         json.dump(startData, f, indent = 4)
         
 @bot.event
 async def on_guild_remove(guild):
     os.remove("files/{}.json".format(guild.id))
-    print("deleted:" + guild.id)
+    print("deleted:" + str(guild.id))
         
 @bot.command()
 async def prefix(ctx, prefix):
