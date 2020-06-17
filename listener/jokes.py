@@ -102,9 +102,15 @@ class JokesListener(commands.Cog):
         await asyncio.sleep(2)
         await message.delete()
         
+    @bot.command()
+    async def qr(self, ctx, args):
+        args = args.join("%20")
+        url = "http://api.qrserver.com/v1/create-qr-code/?data={}&size=1000x1000".format(args)
+        embed = discord.Embed(title="QR Generator:", colour=discord.Colour(botColor))
+        embed.set_image(url=url)
+        await ctx.send(embed = embed)   
         
-       
-        
+
 def setup(client):
     client.add_cog(JokesListener(client))
     print('JokesListener is Loaded') 
