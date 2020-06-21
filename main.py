@@ -104,7 +104,7 @@ async def on_ready():
 @bot.event
 async def on_guild_join(guild):
     with open('files/{}.json'.format(guild.id), 'w+') as f:
-        startData = {"info":{"prefix" : ".", "color" : 0x176BD3}}
+        startData = {"info":{"prefix" : ".", "color" : "0x176BD3"}}
         json.dump(startData, f, indent = 4)
         
 @bot.event
