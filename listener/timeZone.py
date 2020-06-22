@@ -73,6 +73,7 @@ class TimeListener(commands.Cog):
                 data = json.load(file)
                 data.update(addData)
                 file.seek(0)
+                file.truncate()
                 json.dump(data, file, indent=4)
         color = int(get_color(bot, ctx.message))
         embed = discord.Embed(title="**Timezone set!**", colour=discord.Colour(color))

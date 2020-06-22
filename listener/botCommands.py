@@ -81,6 +81,7 @@ class botCommandsListener(commands.Cog):
             prefixes = json.load(f)    
         prefixes["info"]["prefix"] = prefix
         with open('files/{}.json'.format(ctx.guild.id), 'w' ) as f:
+            f.truncate()
             json.dump(prefixes, f, indent = 4)
 
     @bot.command()
@@ -113,6 +114,7 @@ class botCommandsListener(commands.Cog):
                 color = json.load(f)    
             color["info"]["color"] = "0x"+hex
             with open('files/{}.json'.format(ctx.guild.id), 'w' ) as f:
+                f.truncate()
                 json.dump(color, f, indent = 4)
         else:
             color = int(get_color(bot, ctx.message))

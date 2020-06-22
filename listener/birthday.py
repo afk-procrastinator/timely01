@@ -34,8 +34,35 @@ class BirthdayListener(commands.Cog):
         try:
             date = arrow.get(combined, "MMMM D")
             writeFile(combined, ctx, user)
+            color = int(get_color(bot, ctx.message))
+            embed = discord.Embed(title="Birthday set!", colour=discord.Colour(color))
+            embed.add_field(name="🎂🎂🎂", value="Set to: {0}".format(date))
+            await user.send(embed = embed)
         except ValueError:
             print("oopsie!")
+            
+    @bot.command()
+    async def bday(self, ctx, user: discord.Member):
+        userID = user.id
+        userNick = user.nick
+        color = int(get_color(bot, ctx.message))
+        with open('files/{}.json'.format(ctx.guild.id), 'r') as file:
+            try:
+                data = json.load(file)
+                birthday = data["usersbday"][str(userID)]
+                date = birthday.capitalize()
+                embed = discord.Embed(title="{0}'s Birthday:".format(userNick), colour=discord.Colour(color))
+                embed.add_field(name="🎂🎂🎂", value="Their birthday is: **{0}**".format(date))
+                await ctx.send(embed = embed)
+            except KeyError:
+                prefix = get_prefix(bot, ctx.message)
+                embed = discord.Embed(title="No Birthday Set!", colour=discord.Colour(color))
+                embed.add_field(name="🎂🎂🎂", value="{0} doesn't have a birthday set! Use `{1}bdayset MONTH DAY` to set it.".format(userNick, prefix))
+                await ctx.send(embed = embed)
+
+        
+
+        
 
     
 

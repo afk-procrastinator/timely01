@@ -98,7 +98,7 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('------')
-    #print(asciiString)
+    print(asciiString)
     await bot.change_presence(activity=discord.Game(name="the Voight Kampff test"))
 
 @bot.event
