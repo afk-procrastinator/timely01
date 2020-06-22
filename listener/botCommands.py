@@ -76,14 +76,21 @@ class botCommandsListener(commands.Cog):
         await user.send(embed=embed)
 
     @bot.command()
-    async def prefix(self, ctx, prefix):
-        with open('files/{}.json'.format(ctx.guild.id), 'r') as f:
-            prefixes = json.load(f)    
-        prefixes["info"]["prefix"] = prefix
-        with open('files/{}.json'.format(ctx.guild.id), 'w' ) as f:
-            f.truncate()
-            json.dump(prefixes, f, indent = 4)
-
+    async def prefix(self, ctx, *args):
+        prefix = get_prefix(bot, ctx.message)
+        color = int(get_color(bot, ctx.message))
+        if len(args) > 0:
+            with open('files/{}.json'.format(ctx.guild.id), 'r') as f:
+                prefixes = json.load(f)    
+            prefixes["info"]["prefix"] = args[0]
+            with open('files/{}.json'.format(ctx.guild.id), 'w' ) as f:
+                f.truncate()
+                json.dump(prefixes, f, indent = 4)
+        else:
+            embed = discord.Embed(title="Prefix settings!", colour=discord.Color(color))
+            embed.add_field(name="Your current prefix is **{}**".format(prefix), value="Set a new prefix with `{}prefix PREFIX`".format(prefix))
+            await ctx.send(embed=embed)
+    
     @bot.command()
     async def color(self, ctx):
        with open('files/{}.json'.format(ctx.guild.id), 'r') as f:
@@ -116,6 +123,11 @@ class botCommandsListener(commands.Cog):
             with open('files/{}.json'.format(ctx.guild.id), 'w' ) as f:
                 f.truncate()
                 json.dump(color, f, indent = 4)
+            colorPriv = int(get_color(bot, ctx.message))
+            embed = discord.Embed(title="Color settings!", colour=discord.Color(colorPriv))
+            embed.add_field(name="Your new color:", value="hex")
+            embed.set_thumbnail(url="http://www.singlecolorimage.com/get/{}/100x100".format(hex))
+            await ctx.send(embed=embed)
         else:
             color = int(get_color(bot, ctx.message))
             embed = discord.Embed(title="Error:", colour=discord.Colour(color))
@@ -124,7 +136,12 @@ class botCommandsListener(commands.Cog):
             await asyncio.sleep(2)
             await message.delete()
 
-        
+    @bot.command()
+    async def data(self, ctx):
+        embed = discord.Embed(title="Color settings!", colour=new_int)
+        embed.add_field(name="Your current color:", value="**#{0}**\nSet a new color with `{1}colorset HEX`".format(hex_str.replace("0x",""), prefix))
+        embed.set_thumbnail(url="http://www.singlecolorimage.com/get/{}/100x100".format(hexa))
+        await ctx.send(embed=embed)
         
 def setup(client):
     client.add_cog(botCommandsListener(client))
