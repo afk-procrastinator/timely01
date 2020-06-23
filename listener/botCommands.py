@@ -26,46 +26,133 @@ token = settings.TOKEN
 bot = commands.Bot(command_prefix=get_prefix)
 bot.remove_command("help")
 
-helpString1 = """
-**Timezone Calculator: ** *Gives you current time and date in a location*
-`{0}tz` `location`
-**e.g.** `{0}tz new york`
 
-**Currency Calculator: ** *Converts an amount of money between two currencies*
-`{0}convert` `value` `currency` `to` `currency`
-**e.g.** `{0}convert 10 usd to eur`
+mainString = """
+`tz`
+`convert`
+`distance`
+`reminder/timer`
+`birthday`
+`fun`
+`utility`
+`support`
 
-**Time Distance: ** *Calculates the number of days/weeks/months/years between today and a date*
-`{0}dis` `date: [DD/MM/YYYY]` `time units [days, weeks, months, years]`
-**e.g.** `{0}dis 30/08/2021 weeks`
+*Type `{0}help CATEGORY` to see command syntax*
+*Type `{0}help data` to see where and how we use your data.*
+"""
+supportString = """
+I am but a solo developer working on this bot using the discord.py async rewrite, so bugs and issues will be common.
+`{0}message "MESSAGE"` will send me a message- if you notice any bugs, please send them there. Spam and certain keywords will be blocked. 
+All of the code is open-source on my [GitHub](https://github.com/spenmich1/timevibeBot). Star, fork, or message me! 
+"""
+tzString = """
+*Gives the current time for a certain location or user:*
+`{0}tz LOCATION`
+`{0}tz USER`
 
-**Reminder & Timer: ** 
-`{0}remind` `@user` `message` `amount of time` *Reminds you of a message after a certain amount of time by sending you a DM*
-**e.g.** `{0}remind @TimeVibe "go to sleep" 20 mins`
+*Sets your timezone for others to access:*
+`{0}tzset LOCATION`
+"""
+convertString = """
+*Converts an amount from one currency to another:*
+`{0}convert AMOUNT CURRENCY to CURRENCY`
+Type `{0}convert` to see a full list of supported currencies. 
+"""
+distanceString = """
+*Gives the amount of time until a given date:*
+`{0}dis DATE UNIT`
+Date should be in DD/MM/YYYY format. Supported units: days, weeks, months, years. 
+"""
+reminderString = """
+*Sets a timer for a given amount of time. Best for less than an hour.*
+`{0}timer AMOUNT UNIT`
 
-`{0}timer` `amount` `units` *Shows a timer in chat! Good for short times (> 1 hour)
-**e.g.** `{0}timer 10 seconds`
+*Sets a reminder for a given date:*
+`{0}remind USER "MESSAGE" AMOUNT UNIT`
+*Make sure the message is in quotations. This command is still in construction, and may be buggy.*
+"""
+birthdayString = """
+*Gives a user's birthday:*
+`{0}bday USER`
 
+*Sets your birthday for others to access:*
+`{0}bdayset MON DAY`
+*The month should be shortened: e.g. `aug`, `jan`, `mar`.
+"""
+funString = """
+*Checks IMDB data on a movie:*
+`{0}movie MOVIE`
+
+*Checks How Long to Beat data on a videogame:*
+`{0}hltb GAME`
+
+*Generates a QR code of a certain text or url:*
+`{0}qr TEXT`
+
+*Gives the most common phrases and members in a given channel:*
+`{0}messages AMOUNT CHANNEL`
+*Ommiting the `CHANNEL` will return data for the channel the command was sent in.*
+"""
+utilityString = """
+*Sets a new prefix:*
+`{0}prefix PREFIX`
+
+*Sets a new color:*
+`{0}colorset HEX`
 """
 
-helpString2 = """**Fun stuff:**
-`{0}movie` `title` *Gives IMDB data on a movie*
-**e.g.** `{0}movie blade runnner`
-
-`{0}friendship` *Sends you a DM to access commands in your messages*
-
-`{0}hltb` `title` *Returns information on how long to beat a given videogame. Data from HLTB.*
-"""
 class botCommandsListener(commands.Cog):
 
     @bot.command()
-    async def help(self, ctx):
+    async def help(self, ctx, *args):
         prefix = get_prefix(bot, ctx.message)
         color = int(get_color(bot, ctx.message))
-        embed = discord.Embed(title="Help is here!", colour=color)
-        embed.add_field(name=" __**Command Categories:**__", value=helpString1.format(prefix))
-        embed.add_field(name=" __**Command Categories:**__", value=helpString2.format(prefix))
-        await ctx.send(embed=embed)
+        if len(args) == 0:
+            embed = discord.Embed(title="Help is here!", colour=color)
+            embed.add_field(name=" __**Command Categories:**__", value=mainString.format(prefix))
+            await ctx.send(embed=embed)
+        elif args[0] == "tz":
+            embed = discord.Embed(title="Help is here!", colour=color)
+            embed.add_field(name=" __**Timezone Commands:**__", value=tzString.format(prefix))
+            await ctx.send(embed=embed)
+        elif args[0] == "convert":
+            embed = discord.Embed(title="Help is here!", colour=color)
+            embed.add_field(name=" __**Convert Commanbds:**__", value=convertString.format(prefix))
+            await ctx.send(embed=embed)
+        elif args[0] == "distance":
+            embed = discord.Embed(title="Help is here!", colour=color)
+            embed.add_field(name=" __**Distance Commands:**__", value=distanceString.format(prefix))
+            await ctx.send(embed=embed)
+        elif args[0] == "reminder/timer":
+            embed = discord.Embed(title="Help is here!", colour=color)
+            embed.add_field(name=" __**Reminder/Timer Commands:**__", value=reminderString.format(prefix))
+            await ctx.send(embed=embed)
+        elif args[0] == "birthday":
+            embed = discord.Embed(title="Help is here!", colour=color)
+            embed.add_field(name=" __**Birthday Commands:**__", value=birthdayString.format(prefix))
+            await ctx.send(embed=embed)
+        elif args[0] == "fun":
+            embed = discord.Embed(title="Help is here!", colour=color)
+            embed.add_field(name=" __**Fun Commands:**__", value=funString.format(prefix))
+            await ctx.send(embed=embed)
+        elif args[0] == "utility":
+            embed = discord.Embed(title="Help is here!", colour=color)
+            embed.add_field(name=" __**Utility Commands:**__", value=utilityString.format(prefix))
+            embed.set_footer(text="Only users with Admin permissions can run this command.")
+            await ctx.send(embed=embed)
+        elif args[0] == "data":
+            embed = discord.Embed(title="Help is here!", colour=color)
+            embed.add_field(name=" __**How we use your data:**__", value="By inviting me to your server, you only allow me to access the permissions you agreed on when adding me. I only collect data which you give to me, which inclues your birthday and timezone. \nThe timezone data is saved as general regions, not the location you type in. \nThe birthday data saves only what you give it, and doesn't support year of birth for a reason.")
+            await ctx.send(embed=embed)
+        elif args[0] == "support":
+            embed = discord.Embed(title="Help is here!", colour=color)
+            embed.add_field(name=" __**Support me:**__", value=supportString.format(prefix))
+            await ctx.send(embed=embed)
+        else:
+            embed = discord.Embed(title="Help is here!", colour=color)
+            embed.add_field(name=" __**Command Categories:**__", value=mainString.format(prefix))
+            await ctx.send(embed=embed)        
+        
         
     @bot.command()
     async def friendship(self, ctx):
@@ -92,6 +179,7 @@ class botCommandsListener(commands.Cog):
             await ctx.send(embed=embed)
     
     @bot.command()
+    @commands.has_permissions(administrator=True)
     async def color(self, ctx):
        with open('files/{}.json'.format(ctx.guild.id), 'r') as f:
            color = json.load(f)   
@@ -113,6 +201,7 @@ class botCommandsListener(commands.Cog):
        await ctx.send(embed=embed)
     
     @bot.command()
+    @commands.has_permissions(administrator=True)
     async def colorset(self, ctx, hex):
         hex = hex.replace("#", "")
         match = re.search(r'^(?:[0-9a-fA-F]{3}){1,2}$', hex)

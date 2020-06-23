@@ -98,7 +98,7 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('------')
-    print(asciiString)
+    #print(asciiString)
     await bot.change_presence(activity=discord.Game(name="the Voight Kampff test"))
 
 @bot.event
@@ -111,7 +111,13 @@ async def on_guild_join(guild):
 async def on_guild_remove(guild):
     os.remove("files/{}.json".format(guild.id))
     print("deleted:" + str(guild.id))
-    
+
+@bot.command()
+async def PPstatusPP(ctx, *args):
+    if ctx.author.id == 524251122823856149:
+        text = " ".join(args)
+        print(text)
+        await bot.change_presence(activity=discord.Game(name=text))
 
 # Command to delete certain roles: FOR TESTING ONLY
 @bot.command(pass_context=True)

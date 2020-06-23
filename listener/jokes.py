@@ -8,6 +8,11 @@ import time
 import sys
 import asyncio
 import requests
+import itertools
+import operator
+from pprint import pprint
+import re
+import collections
 import json
 from master import get_prefix
 from howlongtobeatpy import HowLongToBeat
@@ -41,6 +46,7 @@ class JokesListener(commands.Cog):
             embed = discord.Embed(title="**How Long to Beat {}**".format(name), colour=discord.Colour(color))
             embed.set_thumbnail(url=image)
             embed.add_field(name="🕹🕹🕹", value = "{0} \n{1} \n{2}".format(mainString, mainExtraString, completionsitString))
+            embed.set_footer(text="Many thanks to the howlongtobeatpy library for the data.")
             await ctx.send(embed=embed)
         else:
             embed = discord.Embed(title="**Search Error**", colour = discord.Color(color))
@@ -85,6 +91,7 @@ class JokesListener(commands.Cog):
         embed = discord.Embed(title="Movie search: {}".format(title), colour=discord.Colour(color))
         embed.set_thumbnail(url=poster)
         embed.add_field(name="🎞🎞🎞🎞🎞🎞", value=stringOne + stringTwo, inline = True)
+        embed.set_footer(text="Many thanks to the OMDB library for the data.")
         await ctx.send(embed = embed)   
     
     @movie.error
@@ -106,12 +113,62 @@ class JokesListener(commands.Cog):
     @bot.command()
     async def qr(self, ctx, args):
         args = args.join("%20")
+        color = int(get_color(bot, ctx.message))
         url = "http://api.qrserver.com/v1/create-qr-code/?data={}&size=1000x1000".format(args)
-        embed = discord.Embed(title="QR Generator:", colour=discord.Colour(botColor))
+        embed = discord.Embed(title="QR Generator:", colour=discord.Colour(color))
         embed.set_image(url=url)
+        embed.set_footer(text="Thanks to QRServer for the API!")
+        await ctx.send(embed = embed)   
+
+    @bot.command()
+    async def messages(self, ctx, amount:int):
+        color = int(get_color(bot, ctx.message))
+        messages = await ctx.channel.history(limit=amount).flatten()
+        authors = []
+        common = []
+        authorsStr = []
+        c = collections.Counter()
+        a = collections.Counter()
+        for i in messages:
+            content = (i.content.split())
+            auth = i.author.id
+            authors.append(auth)
+            c.update(content)
+        for letter, count in c.most_common(3):
+            if letter == None:
+                return
+            else:
+                common.append("** {0} **, used **{1}** times.".format(letter, count))
+        a.update(authors)
+        for letter, count in a.most_common(3):
+            if letter == None:
+                return
+            else:
+                authorsStr.append("**<@{0}>**, who has sent **{1}** messages".format(letter, count))
+        embed = discord.Embed(title="Message analyzer for the last {0} messages:".format(amount), colour=discord.Colour(color))
+        commonString = """
+        Most common is {0}
+        Secondmost common is {1}
+        Thirdmost common is {2}
+        """.format(common[0], common[1], common[2])
+        authorString = """
+        Most messages have been sent by {0}
+        In second place is{1}
+        """.format(authorsStr[0], authorsStr[1])
+        embed.add_field(name="Most common words:", value=commonString)
+        embed.add_field(name="Most active members:", value=authorString)
+        await ctx.send(embed = embed)   
+        # ADD AFTER:         Third place is held by {2}
+    
+    @messages.error
+    async def messages_error(self,ctx, error):
+        color = int(get_color(bot, ctx.message))
+        prefix = get_prefix(bot, ctx.message)
+        embed = discord.Embed(title="Whoops!", colour=discord.Colour(color))
+        embed.add_field(name="There's been an error", value="Please type `{0}help`".format(prefix))
         await ctx.send(embed = embed)   
         
-
+        
 def setup(client):
     client.add_cog(JokesListener(client))
     print('JokesListener is Loaded') 
