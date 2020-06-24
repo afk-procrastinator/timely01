@@ -79,6 +79,8 @@ class CurrencyListener(commands.Cog):
         message = await ctx.send(embed = embed)
         await asyncio.sleep(2)
         await message.delete()
+        
+
     
 def setup(client):
     client.add_cog(CurrencyListener(client))

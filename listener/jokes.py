@@ -56,7 +56,6 @@ class JokesListener(commands.Cog):
         search = ("_".join(args))
         response = requests.get("http://www.omdbapi.com/?apikey={0}&t={1}".format(key, search))
         data = json.loads(response.text)
-        #print(json.dumps(data, indent=4, sort_keys=True))
         title = data["Title"]
         released = data["Released"]
         rated = data["Rated"]
@@ -117,6 +116,14 @@ class JokesListener(commands.Cog):
         embed.set_footer(text="Thanks to QRServer for the API!")
         await ctx.send(embed = embed)   
 
+    @qr.error
+    async def qr_error(self, ctx, error):
+        prefix = get_prefix(bot, ctx.message)
+        color = int(get_color(bot, ctx.message))
+        embed = discord.Embed(title="Error!", colour=discord.Colour(color))
+        embed.add_field(name=">:(", value="Please try again, or type `{}help`".format(prefix))
+        await ctx.send(embed = embed)   
+
     @bot.command()
     async def messages(self, ctx, *args):
         # args[0] should be type discord.TextChannel
@@ -129,22 +136,17 @@ class JokesListener(commands.Cog):
         x = datetime.now()
         i = 0
         color = int(get_color(bot, ctx.message))
-        print(type(args[0]))
-        print(len(args[0]))
         embedTitle: str
         if len(args[0]) == 21:
-            print(args[0])
             channel = args[0].replace("#", "")
             channel = channel.replace("<", "")
             channel = channel.replace(">", "")
             inChan = ctx.guild.get_channel(int(channel))
             i += 1
-            print(type(inChan))
         else:
             inChan = ctx.channel
         if 1 < len(args):
             date = args[i+1]
-            print(args[i])
             amount = int(args[i])
             if date in hour:
                 x = x - timedelta(hours = amount)
@@ -211,7 +213,6 @@ class JokesListener(commands.Cog):
         embed = discord.Embed(title="Whoops!", colour=discord.Colour(color))
         embed.add_field(name="There's been an error", value="Please type `{0}help`".format(prefix))
         await ctx.send(embed = embed)
-        print(error)   
 
         
 def setup(client):

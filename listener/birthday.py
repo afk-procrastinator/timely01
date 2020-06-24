@@ -23,6 +23,7 @@ class BirthdayListener(commands.Cog):
     @bot.command()
     async def bdayset(self, ctx, *args):
         user = ctx.message.author
+        prefix = get_prefix(bot, ctx.message)
         combined = " ".join(args) # i.e. 3 Jan
         try:
             date = arrow.get(combined, "MMMM D")
@@ -32,7 +33,9 @@ class BirthdayListener(commands.Cog):
             embed.add_field(name="🎂🎂🎂", value="Set to: {0}".format(date))
             await user.send(embed = embed)
         except ValueError:
-            print("oopsie!")
+            embed = discord.Embed(title="Birthday error!", colour=discord.Colour(color))
+            embed.add_field(name=">:(", value="Please try again, or type `{}help`".format(prefix))
+            await user.send(embed = embed)
             
     @bot.command()
     async def bday(self, ctx, user: discord.Member):
@@ -52,11 +55,22 @@ class BirthdayListener(commands.Cog):
                 embed = discord.Embed(title="No Birthday Set!", colour=discord.Colour(color))
                 embed.add_field(name="🎂🎂🎂", value="{0} doesn't have a birthday set! Use `{1}bdayset MONTH DAY` to set it.".format(userNick, prefix))
                 await ctx.send(embed = embed)
+                
+    @bdayset.error
+    async def bdayset_error(self, ctx, error):
+        prefix = get_prefix(bot, ctx.message)
+        color = int(get_color(bot, ctx.message))
+        embed = discord.Embed(title="Error!", colour=discord.Colour(color))
+        embed.add_field(name=">:(", value="Please try again, or type `{}help`".format(prefix))
+        await ctx.send(embed = embed)    
 
-        
-
-        
-
+    @bday.error
+    async def bday_error(self, ctx, error):
+        prefix = get_prefix(bot, ctx.message)
+        color = int(get_color(bot, ctx.message))
+        embed = discord.Embed(title="Error!", colour=discord.Colour(color))
+        embed.add_field(name=">:(", value="Please try again, or type `{}help`".format(prefix))
+        await ctx.send(embed = embed)    
     
 
 def setup(client):

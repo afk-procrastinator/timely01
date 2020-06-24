@@ -32,24 +32,21 @@ class GeneralListener(commands.Cog):
     
     # only allows Admin to call the setup()
     @bot.command()
-    async def setup(self, ctx, input: str, *args: str):
+    async def dddddsetup(self, ctx, input: str, *args: str):
         if input == "role":
-            print("role")
             guild = ctx.guild
             selfRole = guild.roles
             for role in selfRole:
                 if role == "TimeVibeRole":
-                    print(role.id)
                     timeVibeRole = True
                     await ctx.send("Bot role already exists!")
         if timeVibeRole == False:
-            print("create")
             role = guild.create_role(name="TimeVibeRole")
             await role
             await bot.add_roles(bot, role)       
     # setup command error handling
     @setup.error
-    async def setup_error(self, ctx, error):
+    async def dddddsetup_error(self, ctx, error):
        if isinstance(error, commands.MissingRequiredArgument):
         color = int(get_color(bot, ctx.message))
         embed = discord.Embed(title="**Argument error**", colour=discord.Colour(color))

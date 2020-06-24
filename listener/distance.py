@@ -90,7 +90,11 @@ class DistanceListener(commands.Cog):
         try:
             startDateParsed = ar.get(arg1, 'DD/MM/YYYY')
         except ar.ParserError:
-            print("error")
+            prefix = get_prefix(bot, ctx.message)
+            color = int(get_color(bot, ctx.message))
+            embed = discord.Embed(title="Error!", colour=discord.Colour(color))
+            embed.add_field(name=">:(", value="Please try again, or type `{}help`".format(prefix))
+            await ctx.send(embed = embed)    
         string, date = difference(self, startDateParsed, arg2)
         embed = discord.Embed(title="Days until: {0}".format(date), colour=discord.Colour(color))
         embed.add_field(name="⏰", value=string)

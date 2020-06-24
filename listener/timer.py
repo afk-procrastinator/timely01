@@ -41,10 +41,8 @@ class TimerListener(commands.Cog):
             return
         if arg2 in ["minutes", "minute", "m", "mins"]:
             arg1 = arg1 * 60
-            print("mins")
         elif arg2 in ["hours", "hour", "hr", "hrs"]:
             arg1 = arg1 * 3600
-            print("hrs")
         totalTime = time.strftime("%H:%M:%S", time.gmtime(arg1))
         if arg1 > 43200:
             embed = discord.Embed(title="Timer too long!", colour=discord.Colour(color))
@@ -68,7 +66,6 @@ class TimerListener(commands.Cog):
             t += 1
             await asyncio.sleep(1)
             if cancelTimer == True:
-                print("cancelled")
                 string = ("_**CANCELLED_**")
                 embed = discord.Embed(title="⏱", colour=discord.Colour(color))
                 embed.add_field(name="⏱", value=string)
@@ -82,7 +79,6 @@ class TimerListener(commands.Cog):
     async def cancel(self, ctx):
         global cancelTimer
         cancelTimer == True
-        print("true")
     # error with the timer command 
     @timer.error
     async def timer_error(self, ctx, error):
@@ -94,6 +90,13 @@ class TimerListener(commands.Cog):
         await asyncio.sleep(2)
         await message.delete()
 
+    @cancel.error
+    async def cancel_error(self, ctx, error):
+        prefix = get_prefix(bot, ctx.message)
+        color = int(get_color(bot, ctx.message))
+        embed = discord.Embed(title="Error!", colour=discord.Colour(color))
+        embed.add_field(name=">:(", value="Please try again, or type `{}help`".format(prefix))
+        await ctx.send(embed = embed)   
     
 
 def setup(client):

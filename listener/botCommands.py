@@ -223,6 +223,53 @@ class botCommandsListener(commands.Cog):
             await asyncio.sleep(2)
             await message.delete()
 
+    @colorset.error
+    async def colorset_error(self, ctx, error):
+        prefix = get_prefix(bot, ctx.message)
+        color = int(get_color(bot, ctx.message))
+        embed = discord.Embed(title="Error!", colour=discord.Colour(color))
+        embed.add_field(name=">:(", value="Please try again, or type `{}help`".format(prefix))
+        await ctx.send(embed = embed)    
+        
+    @color.error
+    async def color_error(self, ctx, error):
+        prefix = get_prefix(bot, ctx.message)
+        color = int(get_color(bot, ctx.message))
+        embed = discord.Embed(title="Error!", colour=discord.Colour(color))
+        embed.add_field(name=">:(", value="Please try again, or type `{}help`".format(prefix))
+        await ctx.send(embed = embed)    
+        
+    @friendship.error
+    async def friendship_error(self, ctx, error):
+        prefix = get_prefix(bot, ctx.message)
+        color = int(get_color(bot, ctx.message))
+        embed = discord.Embed(title="Error!", colour=discord.Colour(color))
+        embed.add_field(name=">:(", value="Please try again, or type `{}help`".format(prefix))
+        await ctx.send(embed = embed)    
+    
+    @prefix.error
+    async def prefix_error(self, ctx, error):
+        prefix = get_prefix(bot, ctx.message)
+        color = int(get_color(bot, ctx.message))
+        embed = discord.Embed(title="Error!", colour=discord.Colour(color))
+        embed.add_field(name=">:(", value="Please try again, or type `{}help`".format(prefix))
+        await ctx.send(embed = embed)   
+        
+    @friendship.error
+    async def friendship_error(self, ctx, error):
+        prefix = get_prefix(bot, ctx.message)
+        color = int(get_color(bot, ctx.message))
+        embed = discord.Embed(title="Error!", colour=discord.Colour(color))
+        embed.add_field(name=">:(", value="Please try again, or type `{}help`".format(prefix))
+        await ctx.send(embed = embed)   
+
+    @help.error
+    async def help_error(self, ctx, error):
+        prefix = get_prefix(bot, ctx.message)
+        color = int(get_color(bot, ctx.message))
+        embed = discord.Embed(title="Error!", colour=discord.Colour(color))
+        embed.add_field(name=">:(", value="Please try again, or type `{}help`".format(prefix))
+        await ctx.send(embed = embed)   
         
 def setup(client):
     client.add_cog(botCommandsListener(client))
