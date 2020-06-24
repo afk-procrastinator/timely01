@@ -1,12 +1,7 @@
 import discord
 from discord.ext import commands
-from discord.utils import get
 import arrow as ar
-import datetime as dt
-from dotenv import load_dotenv
 import settings
-import time
-import sys
 import asyncio
 
 from master import get_prefix

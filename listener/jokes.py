@@ -1,18 +1,9 @@
 import discord
 from discord.ext import commands
-from discord.utils import get
-from dotenv import load_dotenv
-import os
 import settings
-import time
-import sys
 import asyncio
 from datetime import datetime, timedelta
 import requests
-import itertools
-import operator
-from pprint import pprint
-import re
 import collections
 import json
 from master import get_prefix

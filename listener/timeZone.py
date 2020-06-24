@@ -2,15 +2,8 @@ import googlemaps
 from timezonefinder import TimezoneFinder
 import discord
 from discord.ext import commands
-from discord.utils import get
-from dateutil import tz 
 import arrow as ar
-import datetime as dt
-from dotenv import load_dotenv
-import os
 import settings
-import time
-import sys
 import asyncio
 import json
 import re

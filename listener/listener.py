@@ -2,21 +2,7 @@ import googlemaps
 from timezonefinder import TimezoneFinder
 import discord
 from discord.ext import commands
-from discord.utils import get
-from dateutil import tz 
-import arrow as ar
-import datetime as dt
-from dotenv import load_dotenv
-import os
 import settings
-import time
-import sys
-import asyncio
-import csv
-import json
-import threading
-from threading import Thread
-import numba.cuda.tests.cudadrv.test_detect
 
 from master import get_prefix
 bot = commands.Bot(command_prefix=get_prefix)

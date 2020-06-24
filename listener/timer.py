@@ -2,17 +2,9 @@ import googlemaps
 from timezonefinder import TimezoneFinder
 import discord
 from discord.ext import commands
-from discord.utils import get
-from dateutil import tz 
-import arrow as ar
-import datetime as dt
-from dotenv import load_dotenv
-import os
 import settings
 import time
-import sys
 import asyncio
-import json
 from master import get_color
 
 from master import get_prefix
@@ -21,7 +13,6 @@ gmaps = googlemaps.Client(key=settings.GMAPS)
 token = settings.TOKEN
 tf = TimezoneFinder()
 lat = 0
-from master import botColor
 lon = 0
 region = ""
 timeVibeRole = False

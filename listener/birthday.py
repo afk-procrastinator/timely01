@@ -1,16 +1,9 @@
 import discord
 from discord.ext import commands
-from discord.utils import get
 import arrow
-from dotenv import load_dotenv
-import os
 import settings
-import time
-import sys
-import asyncio
 import json
 import arrow
-import re
 from master import get_prefix
 from master import get_color
 
