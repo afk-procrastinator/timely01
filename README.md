@@ -1,7 +1,7 @@
 # Timely Discord Bot
 
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/spenmich1/timely/issues)
-
+![discord.py](https://img.shields.io/badge/discord.py-async-red)
 
 A leightweight Discord bot written with Discord.py and using the Arrow timezone library in order to organize user timezones and other time - based activities. 
 I am always looking for support and feedback, so feel free to fork or message me on Discord at Spencer#3762.
