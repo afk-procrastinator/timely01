@@ -72,45 +72,44 @@ class TimeListener(commands.Cog):
         embed = discord.Embed(title="**Timezone set!**", colour=discord.Colour(color))
         embed.add_field(name="🌍🌍🌍", value= "Timezone for <@{0}> is set to {1}".format(ctx.message.author.id, region))
         await ctx.send(embed=embed)
-
-    # tz command: takes one arg, gives time at location
+    @tzset.error
+    async def tzset_error(self, ctx, error):
+        prefix = get_prefix(bot, ctx.message)
+        color = int(get_color(bot, ctx.message))
+        embed = discord.Embed(title="Error!", colour=discord.Colour(color))
+        embed.add_field(name=">:(", value="Please try again, or type `{}help`".format(prefix))
+        await ctx.send(embed = embed)   
+    
     @bot.command()
     async def tz(self, ctx, input):
         color = int(get_color(bot, ctx.message))
         prefix = get_prefix(bot, ctx.message)
+        embed = discord.Embed(title="**Timezone**", colour=discord.Colour(color))
         if input.startswith("<"):
             string = re.sub("<|>|@|!", "", input)
-            print(string)
             with open('files/{}.json'.format(ctx.guild.id), 'r') as file:
                 data = json.load(file)
-                if string in data["users"]:
+                try:
                     input = data["users"][string]
-                else:
+                except KeyError:
                     embed = discord.Embed(title="**Timezone not set**", colour=discord.Colour(color))
-                    embed.add_field(name="🌍🌍🌍" , value= "User {0} has not set a region! Use `{1}tzset location` to set!".format(input, prefix))
+                    embed.add_field(name="🌍 🌍 🌍" , value= "User {0} has not set a region! Use `{1}tzset location` to set!".format(input, prefix))
                     await ctx.send(embed=embed)
         region, formatted = getRegion(self, input)
-        embed = discord.Embed(title="**Timezone**", colour=discord.Colour(color))
         embed.add_field(name="Local time in: **" + region + "**", value= formatted)
         await ctx.send(embed=embed)
-                
+'''     
     @tz.error
     async def tz_error(self, ctx, error):
+        color = int(get_color(bot, ctx.message))
         embed = discord.Embed(title="**Timezone Error**", colour = discord.Color(color))
         prefix = get_prefix(bot, ctx.message)
         embed.add_field(name = "_**Please try again!**_", value = "Your query returned no significant data. Please try again! \n \nExample: `{0}tz moscow`".format(prefix))
         message = await ctx.send(embed = embed)
         await asyncio.sleep(2)
         await message.delete()
-
-    @tz.error
-    async def tz_error(self, ctx, error):
-        prefix = get_prefix(bot, ctx.message)
-        color = int(get_color(bot, ctx.message))
-        embed = discord.Embed(title="Error!", colour=discord.Colour(color))
-        embed.add_field(name=">:(", value="Please try again, or type `{}help`".format(prefix))
-        await ctx.send(embed = embed)   
-        
+'''
+    
 def setup(client):
     client.add_cog(TimeListener(client))
     print('TimeListener is Loaded') 

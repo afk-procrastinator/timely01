@@ -45,7 +45,7 @@ class GeneralListener(commands.Cog):
             await role
             await bot.add_roles(bot, role)       
     # setup command error handling
-    @setup.error
+    @dddddsetup.error
     async def dddddsetup_error(self, ctx, error):
        if isinstance(error, commands.MissingRequiredArgument):
         color = int(get_color(bot, ctx.message))
