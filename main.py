@@ -5,11 +5,9 @@ from discord.ext import commands
 import arrow as ar
 import os
 import settings
-from discord.utils import find
 import json
 import sys
 from master import get_prefix
-from master import get_color
 
 asciiString = """
                         .s$$$Ss.
@@ -99,11 +97,6 @@ async def on_guild_join(guild):
     with open('files/{}.json'.format(guild.id), 'w+') as f:
         startData = {"info":{"prefix" : ".", "color" : "0x176BD3"}}
         json.dump(startData, f, indent = 4)
-    embed = discord.Embed(title="Joined!", colour=discord.Colour(1534931))
-    general = find(lambda x: x.name == 'general',  guild.text_channels)
-    if general and general.permissions_for(guild.me).send_messages:
-        embed.add_field(name="What's up!", value="Hello {}! I'm Timely. \nThank you for adding me to your server. Type in `.help` for commands, or `.prefix PREFIX` to change your prefix.".format(guild.name))
-        await general.send(embed=embed)
         
 @bot.event
 async def on_guild_remove(guild):
