@@ -8,7 +8,7 @@ I am always looking for support and feedback, so feel free to fork or message me
 - Currency converter
 - Timer and reminders
 - Check current time for a user
-- Message statistics [not yet implemented]
+- Message statistics
 - Days/weeks/years until a certain date
 - Global heatmap [not yet implemented]
 - IMDB and HLTB data
