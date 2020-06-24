@@ -42,8 +42,9 @@ mainString = """
 """
 supportString = """
 I am but a solo developer working on this bot using the discord.py async rewrite, so bugs and issues will be common.
-`{0}message "MESSAGE"` will send me a message- if you notice any bugs, please send them there. Spam and certain keywords will be blocked. 
-All of the code is open-source on my [GitHub](https://github.com/spenmich1/timevibeBot). Star, fork, or message me! 
+`{0}contact MESSAGE` will send me a message- if you notice any bugs, please send them there. Spam and certain keywords will be blocked. 
+All of the code is open-source on my [GitHub](https://github.com/spenmich1/timevibeBot). Star, fork, or message me!
+Donate to me via PayPal [spencermichaels1@gmail.com] or BTC: [1Mf3oAadsGJVN39Up9gZwQdQneMy6DDc2c].
 """
 tzString = """
 *Gives the current time for a certain location or user:*
@@ -90,8 +91,9 @@ funString = """
 `{0}qr TEXT`
 
 *Gives the most common phrases and members in a given channel:*
-`{0}messages AMOUNT CHANNEL`
+`{0}messages CHANNEL AMOUNT`
 *Ommiting the `CHANNEL` will return data for the channel the command was sent in.*
+*You can also change `AMOUNT` with a certain length of time in hours, days, or weeks*,
 """
 utilityString = """
 *Sets a new prefix:*
@@ -102,7 +104,7 @@ utilityString = """
 """
 
 class botCommandsListener(commands.Cog):
-
+        
     @bot.command()
     async def help(self, ctx, *args):
         prefix = get_prefix(bot, ctx.message)
@@ -142,7 +144,15 @@ class botCommandsListener(commands.Cog):
             await ctx.send(embed=embed)
         elif args[0] == "data":
             embed = discord.Embed(title="Help is here!", colour=color)
-            embed.add_field(name=" __**How we use your data:**__", value="By inviting me to your server, you only allow me to access the permissions you agreed on when adding me. I only collect data which you give to me, which inclues your birthday and timezone. \nThe timezone data is saved as general regions, not the location you type in. \nThe birthday data saves only what you give it, and doesn't support year of birth for a reason.")
+            embed.add_field(name=" __**How we use your data:**__", value="""By inviting me to your server, you only allow me to access the permissions you agreed on when adding me. I only collect data which you give to me, which inclues your birthday and timezone. 
+                            
+                            The timezone data is saved as **general regions**, not the location you type in. 
+                            
+                            The birthday data saves only what you give it, and **doesn't support year of birth** for a reason.
+                            
+                            The messaging parsing command only temporarily reads the messages in the server, and deletes **any mention** of the messages from it's instant memory as soon as it finishes. 
+                            
+                            All data saved is deleted upon leaving a server. We use the same hosting servers as many other leading bots who collect far more detailed information on you. """)
             await ctx.send(embed=embed)
         elif args[0] == "support":
             embed = discord.Embed(title="Help is here!", colour=color)
@@ -152,7 +162,6 @@ class botCommandsListener(commands.Cog):
             embed = discord.Embed(title="Help is here!", colour=color)
             embed.add_field(name=" __**Command Categories:**__", value=mainString.format(prefix))
             await ctx.send(embed=embed)        
-        
         
     @bot.command()
     async def friendship(self, ctx):
@@ -225,12 +234,6 @@ class botCommandsListener(commands.Cog):
             await asyncio.sleep(2)
             await message.delete()
 
-    @bot.command()
-    async def data(self, ctx):
-        embed = discord.Embed(title="Color settings!", colour=new_int)
-        embed.add_field(name="Your current color:", value="**#{0}**\nSet a new color with `{1}colorset HEX`".format(hex_str.replace("0x",""), prefix))
-        embed.set_thumbnail(url="http://www.singlecolorimage.com/get/{}/100x100".format(hexa))
-        await ctx.send(embed=embed)
         
 def setup(client):
     client.add_cog(botCommandsListener(client))

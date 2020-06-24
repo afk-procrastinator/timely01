@@ -69,6 +69,9 @@ day = ["days", "day", "dy", "dys"]
 hour = ["hours", "hour", "hr", "hrs"]
 min = ["minutes", "minute", "min", "mins"]
 
+guildCount: int
+memberCount: int
+
 startup_extensions = [
     "listener.listener",
     "listener.timeZone",
@@ -80,8 +83,6 @@ startup_extensions = [
     "listener.jokes",
     "listener.birthday"
 ]
-
-print("activate!!!")
 
 # On bot login, send info
 @bot.event
@@ -98,7 +99,7 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('------')
-    #print(asciiString)
+    print(asciiString)
     await bot.change_presence(activity=discord.Game(name="the Voight Kampff test"))
 
 @bot.event
@@ -112,13 +113,30 @@ async def on_guild_remove(guild):
     os.remove("files/{}.json".format(guild.id))
     print("deleted:" + str(guild.id))
 
+
 @bot.command()
 async def PPstatusPP(ctx, *args):
+    global memberCount
+    global guildCount
     if ctx.author.id == 524251122823856149:
         text = " ".join(args)
         print(text)
         await bot.change_presence(activity=discord.Game(name=text))
+        user = bot.get_user(524251122823856149)
+        await user.send(""""Current statistics:
+                        Users: {0}
+                        Guilds: {1}""".format(memberCount, guildCount))
 
+@bot.command()
+async def contact(ctx, *args):
+    text = " ".join(args)
+    print(text)
+    date = ar.utcnow().format()
+    print(str(ctx.message.author))
+    string = "Message from `{0}`, from guild `{1}`, ID: `{2}`. Sent at `{3}`. Message states: \n`{4}`.".format(ctx.message.author, ctx.guild.name, ctx.guild.id, date, text)
+    user = bot.get_user(524251122823856149)
+    await user.send(string)
+    
 # Command to delete certain roles: FOR TESTING ONLY
 @bot.command(pass_context=True)
 async def delrole(ctx, *,role_name):

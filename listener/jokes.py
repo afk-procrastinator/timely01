@@ -7,6 +7,7 @@ import settings
 import time
 import sys
 import asyncio
+from datetime import datetime, timedelta
 import requests
 import itertools
 import operator
@@ -20,6 +21,9 @@ bot = commands.Bot(command_prefix=get_prefix)
 key = settings.OMDB
 from master import get_color
 
+week = ["weeks", "week", "wk", "wks"]
+day = ["days", "day", "dy", "dys"]
+hour = ["hours", "hour", "hr", "hrs"]
 
 class JokesListener(commands.Cog):
     @bot.command()
@@ -97,14 +101,16 @@ class JokesListener(commands.Cog):
     @movie.error
     async def movie_error(self, ctx, error):
         color = int(get_color(bot, ctx.message))
+        prefix = get_prefix(bot, ctx.message)
         embed = discord.Embed(title="Movie search error >:(", colour=discord.Colour(color))
-        embed.add_field(name="🎞🎞🎞🎞🎞🎞", value="**Please retry with a different search input!** \n Syntax is: `t!movie` `query`")
+        embed.add_field(name="🎞🎞🎞🎞🎞🎞", value="**Please retry with a different search input!** \n Syntax is: `{0}movie` `query`".format(prefix))
         await ctx.send(embed = embed)
         
     @hltb.error
     async def hltb_error(self, ctx, error):
         prefix = get_prefix(bot, ctx.message)
-        embed = discord.Embed(title="Videogame search error >:(", colour=discord.Colour(botColor))
+        color = int(get_color(bot, ctx.message))
+        embed = discord.Embed(title="Videogame search error >:(", colour=discord.Colour(color))
         embed.add_field(name="🎞🎞🎞🎞🎞🎞", value="**Please retry with a different search input!** \n Syntax is: `{}hltb Undertale`".format(prefix))
         message = await ctx.send(embed = embed)
         await asyncio.sleep(2)
@@ -121,9 +127,57 @@ class JokesListener(commands.Cog):
         await ctx.send(embed = embed)   
 
     @bot.command()
-    async def messages(self, ctx, amount:int):
+    async def messages(self, ctx, *args):
+        # args[0] should be type discord.TextChannel
+            # if args[0] invalid, channel is self 
+        # args[1] should be int
+        # if args[2] doesnt exist, then its number of messages
+        # if it does, then its hours/days/etc
+        amount: int
+        prefix = get_prefix(bot, ctx.message)
+        x = datetime.now()
+        i = 0
         color = int(get_color(bot, ctx.message))
-        messages = await ctx.channel.history(limit=amount).flatten()
+        print(type(args[0]))
+        print(len(args[0]))
+        embedTitle: str
+        if len(args[0]) == 21:
+            print(args[0])
+            channel = args[0].replace("#", "")
+            channel = channel.replace("<", "")
+            channel = channel.replace(">", "")
+            inChan = ctx.guild.get_channel(int(channel))
+            i += 1
+            print(type(inChan))
+        else:
+            inChan = ctx.channel
+        if 1 < len(args):
+            date = args[i+1]
+            print(args[i])
+            amount = int(args[i])
+            if date in hour:
+                x = x - timedelta(hours = amount)
+                embedTitle = "Message analyzer for messages sent in the last {0} hour(s) in #{1}".format(amount, inChan)
+            elif date in day:
+                x = x - timedelta(days = amount)
+                embedTitle = "Message analyzer for messages sent in the last {0} day(s) in #{1}".format(amount, inChan)
+            elif date in week:
+                x = x - timedelta(weeks = amount)
+                embedTitle = "Message analyzer for messages sent in the last {0} week(s) in #{1}".format(amount, inChan)
+            else:
+                embed = discord.Embed(title="Something's not valid!", colour=discord.Colour(color))
+                embed.add_field(name=">:(", value="Type `{}help`!".format(prefix))
+                await ctx.send(embed = embed)
+                return
+            messages = await inChan.history(after = x).flatten()
+        else:
+            amount = int(args[0])
+            embedTitle = "Message analyzer for messages in the last {0} messages in {1}".format(amount, inChan)
+            messages = await inChan.history(limit=amount).flatten()
+        embed = discord.Embed(title="We're thinking....", colour=discord.Colour(color))
+        embed.add_field(name="🤔🤔🤔", value="Depending on how many messages we've gotta go through, this might take a moment...")
+        message = await ctx.send(embed = embed)
+        color = int(get_color(bot, ctx.message))
         authors = []
         common = []
         authorsStr = []
@@ -145,7 +199,7 @@ class JokesListener(commands.Cog):
                 return
             else:
                 authorsStr.append("**<@{0}>**, who has sent **{1}** messages".format(letter, count))
-        embed = discord.Embed(title="Message analyzer for the last {0} messages:".format(amount), colour=discord.Colour(color))
+        embed = discord.Embed(title=embedTitle, colour=discord.Colour(color))
         commonString = """
         Most common is {0}
         Secondmost common is {1}
@@ -157,17 +211,17 @@ class JokesListener(commands.Cog):
         """.format(authorsStr[0], authorsStr[1])
         embed.add_field(name="Most common words:", value=commonString)
         embed.add_field(name="Most active members:", value=authorString)
-        await ctx.send(embed = embed)   
-        # ADD AFTER:         Third place is held by {2}
-    
+        await message.edit(embed=embed)
+
     @messages.error
     async def messages_error(self,ctx, error):
         color = int(get_color(bot, ctx.message))
         prefix = get_prefix(bot, ctx.message)
         embed = discord.Embed(title="Whoops!", colour=discord.Colour(color))
         embed.add_field(name="There's been an error", value="Please type `{0}help`".format(prefix))
-        await ctx.send(embed = embed)   
-        
+        await ctx.send(embed = embed)
+        print(error)   
+
         
 def setup(client):
     client.add_cog(JokesListener(client))
