@@ -1,4 +1,4 @@
-# TimeVibe Discord Bot
+# Timely Discord Bot
 
 A leightweight Discord bot written with Discord.py and using the Arrow timezone library in order to organize user timezones and other time - based activities. 
 I am always looking for support and feedback, so feel free to fork or message me on Discord at Spencer#3762.
