@@ -164,7 +164,7 @@ class botCommandsListener(commands.Cog):
     async def prefix(self, ctx, *args):
         prefix = get_prefix(bot, ctx.message)
         color = int(get_color(bot, ctx.message))
-        if len(args) > 0:
+        if args:
             with open('files/{}.json'.format(ctx.guild.id), 'r') as f:
                 prefixes = json.load(f)    
             prefixes["info"]["prefix"] = args[0]
